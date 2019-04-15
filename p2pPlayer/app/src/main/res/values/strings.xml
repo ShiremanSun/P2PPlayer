@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">p2pPlayer</string>
+    <string name="tab_search">搜索</string>
+    <string name="tab_downloading">正在下载</string>
+    <string name="tab_downloaded">已下载</string>
+    <string name="play">播放</string>
+    <string name="download">缓存</string>
+</resources>
