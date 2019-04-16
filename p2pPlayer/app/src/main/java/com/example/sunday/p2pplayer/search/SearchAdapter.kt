@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.example.sunday.p2pplayer.MainActivity
-import com.example.sunday.p2pplayer.Model.Movie
+import com.example.sunday.p2pplayer.model.Movie
 import com.example.sunday.p2pplayer.R
 import com.example.sunday.p2pplayer.movieplay.VideoActivity
 
@@ -30,8 +30,7 @@ class SearchAdapter() : RecyclerView.Adapter<SearchAdapter.ViewHolder>(){
         mContext = p0.context
         val view = LayoutInflater.from(mContext).inflate(R.layout.item_movie, p0, false)
 
-
-
+        
         return ViewHolder(view)
     }
 
@@ -46,13 +45,13 @@ class SearchAdapter() : RecyclerView.Adapter<SearchAdapter.ViewHolder>(){
 
         p0.itemView.setOnClickListener{
             val intent = Intent(mContext, VideoActivity::class.java)
-            intent.putExtra(MainActivity.MOVIEURL, list[p1].url)
+            intent.putExtra(FragmentSearch.MOVIE_URL, list[p1].url)
             mContext.startActivity(intent)
         }
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var imageView = view.findViewById<ImageView>(R.id.imageView3)
+        var imageView = view.findViewById<ImageView>(R.id.movie_cav)!!
 
     }
 

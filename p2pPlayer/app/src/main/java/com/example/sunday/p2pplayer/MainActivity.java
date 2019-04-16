@@ -18,7 +18,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     public static final int PAGE_TWO = 1;
     public static final int PAGE_THREE = 2;
 
-    private RadioGroup mRadiaGroup;
     private RadioButton mSearch;
     private RadioButton mDownloaded;
     private RadioButton mDownloading;
@@ -32,18 +31,18 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_search);
+        setContentView(R.layout.activity_main);
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
-            localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);
-        }
 
-        mRadiaGroup = findViewById(R.id.tab_bar);
+        RadioGroup mRadiaGroup = findViewById(R.id.tab_bar);
         mSearch = findViewById(R.id.tab_search);
         mDownloading = findViewById(R.id.tab_downloading);
         mDownloaded = findViewById(R.id.tab_downloaded);
         mViewPager = findViewById(R.id.viewPager);
+        mRadiaGroup.setOnCheckedChangeListener(this);
 
         mSearch.setChecked(true);
 

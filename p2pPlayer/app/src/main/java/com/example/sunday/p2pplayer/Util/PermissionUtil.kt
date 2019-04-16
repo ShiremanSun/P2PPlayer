@@ -5,6 +5,6 @@ package com.example.sunday.p2pplayer.Util
  */
 object PermissionUtil {
     fun requestPermission(array: Array<String>) {
-
+        
     }
 }

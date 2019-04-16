@@ -4,10 +4,12 @@ import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.FrameMetrics
 import android.view.View
 import android.view.WindowManager
 import com.example.sunday.p2pplayer.R
 import com.example.sunday.p2pplayer.MainActivity
+import com.example.sunday.p2pplayer.search.FragmentSearch
 import com.pili.pldroid.player.*
 
 import com.pili.pldroid.player.widget.PLVideoView
@@ -67,7 +69,7 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
         mVideoView.setOnVideoFrameListener(mOnVideoFrameListener)
         mVideoView.setOnAudioFrameListener(mOnAudioFrameListener)
         val intent = intent
-        val url = intent.getStringExtra(MainActivity.MOVIEURL)
+        val url = intent.getStringExtra(FragmentSearch.MOVIE_URL)
         Log.d("hh",url)
         mVideoView.setVideoPath(url)
 
