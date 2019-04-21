@@ -1,15 +1,23 @@
 package com.example.sunday.p2pplayer;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
+import com.example.sunday.p2pplayer.model.MovieBean;
+import com.google.gson.reflect.TypeToken;
+import com.gyf.immersionbar.ImmersionBar;
+
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 @Route(path = "showmovie/mainactivity")
 public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, ViewPager.OnPageChangeListener{
@@ -32,10 +40,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
+        ImmersionBar.with(this).navigationBarColor(R.color.colorPrimary).init();
 
         RadioGroup mRadiaGroup = findViewById(R.id.tab_bar);
         mSearch = findViewById(R.id.tab_search);
@@ -79,11 +85,50 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     @Override
     public void onPageScrolled(int i, float v, int i1) {
 
+         Observable.create(emitter -> {
+
+        }).subscribeOn(Schedulers.io())
+                 .observeOn(AndroidSchedulers.mainThread())
+                 .subscribe(new Observer<Object>() {
+                     @Override
+                     public void onSubscribe(Disposable d) {
+
+                     }
+
+                     @Override
+                     public void onNext(Object o) {
+
+                     }
+
+                     @Override
+                     public void onError(Throwable e) {
+
+                     }
+
+                     @Override
+                     public void onComplete() {
+
+                     }
+                 });
+        new TypeToken<List<MovieBean>>(){}.getType();
     }
 
     @Override
     public void onPageSelected(int i) {
+        switch (i) {
+            case PAGE_ONE:
 
+                mSearch.setChecked(true);
+                break;
+            case PAGE_TWO:
+
+                mDownloading.setChecked(true);
+                break;
+            case PAGE_THREE:
+
+                mDownloaded.setChecked(true);
+                break;
+        }
     }
 
     @Override
@@ -91,17 +136,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
         //如果i==2，表示滑动结束
         if (i == 2) {
-            switch (mViewPager.getCurrentItem()) {
-                case PAGE_ONE:
-                    mSearch.setChecked(true);
-                    break;
-                case PAGE_TWO:
-                    mDownloading.setChecked(true);
-                    break;
-                case PAGE_THREE:
-                    mDownloaded.setChecked(true);
-                    break;
-            }
+
         }
 
     }

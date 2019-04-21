@@ -1,6 +1,5 @@
-<%@page import="java.sql.Statement"%>
-<%@page import="java.sql.DriverManager"%>
-<%@page import="java.sql.Connection"%>
+
+<%@page import="com.itheima.ck.bean.*"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ include file="head.jsp" %>
 <!DOCTYPE html>
@@ -27,6 +26,7 @@
 <body>
 
 
+<a href = "">查看电影</a>
 
 <div class="container">
 
@@ -54,31 +54,8 @@
 </div>
 
 <%
-final String creatsql = "CREATE TABLE IF NOT EXISTS movie(" + "name varchar(100) not null  PRIMARY KEY,"
-           + "details varchar(100)," 
-		   + "datasourcePath varchar(100)," 
-           + "imagePathString varchar(100)," 
-		   + "torrentpathString varchar(100)"
-           + ")charset=utf8";
-	try{
-		Class.forName("com.mysql.jdbc.Driver");//加载数据库驱动
-		String dbUrl = "jdbc:mysql://localhost:3306/movies?useSSL=false";
-		String username = "root";
-		String password = "1234";
-		Connection connection = DriverManager.getConnection(dbUrl, username, password);
-		if(connection != null) {
-			System.out.print("链接成功");
-		}else{
-			System.out.print("链接失败");
-		}
-		Statement statement = connection.createStatement();
-		if(0==statement.executeLargeUpdate(creatsql)) {
-			System.out.print("创建成功");
-		}
-		connection.close();
-	}catch(ClassNotFoundException e) {
-		e.printStackTrace();
-	}
+  //创建数据库
+  MovieDao.getInstance().CreateTable();
 %>
 
 <script type="text/javascript">
@@ -179,7 +156,6 @@ final String creatsql = "CREATE TABLE IF NOT EXISTS movie(" + "name varchar(100)
     });
 
     uploader.on('uploadSuccess', function (file) {
-    	$.post('@Url.Action("Merge")');
         $('#' + file.id).find('p.state').text('已上传');
     });
 
@@ -195,7 +171,7 @@ final String creatsql = "CREATE TABLE IF NOT EXISTS movie(" + "name varchar(100)
     var uploader2 = WebUploader.create({
     	// swf文件路径
         swf: '${ctx}/webuploader-0.1.5/Uploader.swf',
-       // server: '${ctx}/imageUpload',
+        server: '${ctx}/imageUpload',
         pick: '#filePicker',
         fileNumLimit: 1,
      // 只允许选择图片文件。
@@ -288,6 +264,8 @@ final String creatsql = "CREATE TABLE IF NOT EXISTS movie(" + "name varchar(100)
     	if(!name || !details) {
     		alert("请输入完整内容");
     	} else {
+    	//查询数据库是否已经有该文件，如果有，再提示
+    	
     	if (state === 'uploading') {
     	        alert("正在上传");
     	    } else {

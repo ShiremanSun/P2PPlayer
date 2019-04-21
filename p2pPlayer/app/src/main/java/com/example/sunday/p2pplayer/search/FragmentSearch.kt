@@ -1,7 +1,6 @@
 package com.example.sunday.p2pplayer.search
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
@@ -9,17 +8,16 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import com.example.sunday.p2pplayer.MainActivity
-import com.example.sunday.p2pplayer.model.Movie
+import com.example.sunday.p2pplayer.model.MovieBean
 import com.example.sunday.p2pplayer.model.MyViewModel
 import com.example.sunday.p2pplayer.R
+import com.gyf.immersionbar.ImmersionBar
 import java.util.ArrayList
 
 /**
@@ -33,7 +31,7 @@ class FragmentSearch : Fragment() {
 
     private lateinit var mViewModel : MyViewModel
 
-    private val mList = ArrayList<Movie>()
+    private val mList = ArrayList<MovieBean>()
     private var mAdapter = SearchAdapter(mList)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -43,6 +41,7 @@ class FragmentSearch : Fragment() {
         val toolbar = view.findViewById<Toolbar>(R.id.toolBar)
         (activity as MainActivity).setSupportActionBar(toolbar)
 
+        ImmersionBar.setTitleBar(activity,toolbar)
         val layoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = mAdapter

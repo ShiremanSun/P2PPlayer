@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.itheima.ck.bean.FileUploadBean;
 import com.itheima.ck.bean.MovieBean;
+import com.itheima.ck.bean.MovieDao;
 import com.itheima.ck.utils.FileUtils;
 
 /**
@@ -43,9 +44,11 @@ public class ImageUploadServlet extends HttpServlet {
 	private Logger logger = LoggerFactory.getLogger(UploadController.class);
 	
 	private static String finalDirPath = "/var/www/html/images/";
+	private static String ipAddressString = "http://192.138.48.43";
        
 	private String movieName;
 	private String movieDetails;
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -89,10 +92,10 @@ public class ImageUploadServlet extends HttpServlet {
 				//拿到movie的标题和描述
                 for (FileItem item : list) {
 					if ("moviename".equals(item.getFieldName())) {
-						movieName = item.getString();
+						movieName = item.getString("utf-8");
 					}
 					if ("details".equals(item.getFieldName())) {
-						movieDetails = item.getString();
+						movieDetails = item.getString("utf-8");
 					}
 				}
 				
@@ -110,48 +113,33 @@ public class ImageUploadServlet extends HttpServlet {
             Files.write(path, fileData, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
             
             try {
-				Class.forName("com.mysql.jdbc.Driver");
-				String dbUrl = "jdbc:mysql://localhost:3306/movies?useSSL=false";
-				String username = "root";
-				String password = "1234";
-				Connection connection = DriverManager.getConnection(dbUrl, username, password);
-				MovieBean movieBean = new MovieBean();
-				movieBean.name = movieName;
-				String searchString = "select * from movie where name=?";
-				if (connection != null) {
+				if (MovieDao.getInstance().getConnection() != null) {
 					//连接成功
 					
-					PreparedStatement statement = connection.prepareStatement(searchString);
-					System.out.println("连接成功" );
-					statement.setString(1, movieName);
-					ResultSet resultSet = statement.executeQuery();
-					if (!resultSet.next()) {
+					if (!MovieDao.getInstance().ifExsts(movieName)) {
 						//插入表
-						String sqlString = "insert into movie(name,details,datasourcePath,imagePathString,torrentpathString) values(?,?,?,?,?)";
-						PreparedStatement preparedStatement = connection.prepareStatement(sqlString);
-						preparedStatement.setString(1, movieName);
-						preparedStatement.setString(2, "");
-						preparedStatement.setString(3, "");
-						preparedStatement.setString(4, dirString);
-						preparedStatement.setString(5, "");
-						preparedStatement.executeUpdate();
+						System.out.println("图片插入表");
+						MovieBean movieBean = new MovieBean();
+						movieBean.name = movieName;
+						movieBean.details = "";
+						movieBean.datasourcePath = "";
+						movieBean.imagePathString = dirString;
+						movieBean.torrentpathString = "";
+						MovieDao.getInstance().addMovie(movieBean);
 					}else {
 						//更新表格
 						String sqlString = "update movie set imagePathString=? where name=?";
-						PreparedStatement preparedStatement = connection.prepareStatement(sqlString);
+						PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
 						preparedStatement.setString(1, dirString);
 						preparedStatement.setString(2, movieName);
 						preparedStatement.executeUpdate();
+						preparedStatement.close();
 					}
-					statement.close();
-					connection.close();
+					
 				}else {
 					System.out.println("连接失败");
 				}
 				
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (SQLException e) {
 				// TODO: handle exception
 				e.printStackTrace();

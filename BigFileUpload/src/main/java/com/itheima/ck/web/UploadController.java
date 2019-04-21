@@ -4,6 +4,7 @@ package com.itheima.ck.web;
 import com.itheima.ck.bean.FileBean;
 import com.itheima.ck.bean.FileUploadBean;
 import com.itheima.ck.bean.MovieBean;
+import com.itheima.ck.bean.MovieDao;
 import com.itheima.ck.utils.FileUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.fileupload.FileItem;
@@ -14,11 +15,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.IIOException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.nio.file.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -38,6 +43,7 @@ public class UploadController extends HttpServlet {
 	private Logger logger = LoggerFactory.getLogger(UploadController.class);
 
     private static String finalDirPath = "/var/www/html/datasource/";
+    private static final String FINAL_TORRENT_PATH_STRING = "/var/www/html/torrrent/";
     private String movieName;
     private String movieDetails;
     
@@ -46,6 +52,8 @@ public class UploadController extends HttpServlet {
     private HttpServletRequest request;
     
     private String fileName;
+    
+    private static final String HOSTIP = "188.131.249.47"; 
 
     private String tempPath;
     private Map<String, FileBean> fileMap = Collections.synchronizedMap(new HashMap<String, FileBean>());
@@ -83,11 +91,11 @@ public class UploadController extends HttpServlet {
                 for (FileItem item : fileItems) {
                 	
 					if ("moviename".equals(item.getFieldName())) {
-						movieName = item.getString();
+						movieName = item.getString("utf-8");
 					
 					}
 					if ("details".equals(item.getFieldName())) {
-						movieDetails = item.getString();
+						movieDetails = item.getString("utf-8");
 				
 					}
 				}
@@ -119,7 +127,7 @@ public class UploadController extends HttpServlet {
             } else {
                 // 文件夹已存在, 先检测是否完成收集
                 // 1.检查是否有文件,有进入2, 没有进3
-                Path localPath = Paths.get(uploadDirPath, fileName);
+                Path localPath = Paths.get(finalDirPath, fileName);
 
                 // 2.检查md5值是否匹配, 应该建立数据库,存储文件信息才是更快 更好的解决办法.
                 // 2.1.若匹配直接返回成功.
@@ -129,7 +137,7 @@ public class UploadController extends HttpServlet {
                     if (StringUtils.equals(param.getMd5(), nowMd5)) {
                         // 比较相等,那么直接返回成功.
                         logger.info("已检测到重复文件{},并且比较md5相等,已直接返回", fileName);
-                        return;
+                        throw new IIOException("文件已存在");
                     } else {
                         // 删除
                         logger.info("已经存在的文件的md5不匹配上传上来的文件的md5,删除后重新下载");
@@ -175,18 +183,6 @@ public class UploadController extends HttpServlet {
             File[] files = new File(uploadDirPath).listFiles();
             //如果上传完毕
             if (files.length == chunks) {
-//                // 先查看目录下的文件数是否满足条件
-//                int count = 0;
-//                // 遍历一层文件
-//                try(DirectoryStream<Path> paths = Files.newDirectoryStream(tmpDir)) {
-//                    for(Path entry : paths) {
-//                        count++;
-//                    }
-//                }
-//                if (count != fileBean.getChunks()) {
-//                    logger.info("大小与目录下的文件数不符,不能合并.{}", count);
-//                    return;
-//                }
                 // 合并文件..不用合并到MD5文件夹下
                 Path realFile = Paths.get(finalDirPath, fileBean.getName());
                 realFile = Files.createFile(realFile);
@@ -205,48 +201,22 @@ public class UploadController extends HttpServlet {
                 //删除MD5文件夹
                 new File(finalDirPath + param.getMd5()).delete();
                 
-                //在这插入数据库
-                try {
-					Class.forName("com.mysql.jdbc.Driver");
-					String dbUrl = "jdbc:mysql://localhost:3306/movies?useSSL=false";
-					String username = "root";
-					String password = "1234";
-					Connection connection = DriverManager.getConnection(dbUrl, username, password);
-					MovieBean movieBean = new MovieBean();
-					movieBean.name = movieName;
-					String searchString = "select * from movie where name=?";
-					if (connection != null) {
-						//连接成功
-						//先判断是否存在该name
-						PreparedStatement statement = connection.prepareStatement(searchString);
-						statement.setString(1, movieName);
-						ResultSet resultSet = statement.executeQuery();
-						
-						if (!resultSet.next()) {
-							//插入表
-							String sqlString = "insert into movie(name,details,datasourcePath,imagePathString,torrentpathString) values(?,?,?,?,?)";
-							PreparedStatement preparedStatement = connection.prepareStatement(sqlString);
-							preparedStatement.setString(1, movieName);
-							preparedStatement.setString(2, movieDetails);
-							preparedStatement.setString(3, "");
-							preparedStatement.setString(4, "");
-							preparedStatement.setString(5, "");
-							preparedStatement.executeUpdate();
-						}
-					}
-					
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO: handle exception
-				}
+                
                 //制作种子
                 new Thread(new Runnable() {
 					
 					@Override
 					public void run() {
-						String makeTorrentString = "/usr/local/bin/btmaketorrent.py http://localhost:6969/announce "+finalDirPath + fileBean.getName();	
+						String ipString="";
+						try {
+							ipString = getLocalHostLANAddress().getHostAddress();
+						} catch (UnknownHostException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}						
+						
+						System.out.println("本机的IP地址是" + ipString);
+						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+HOSTIP+":6969/announce "+finalDirPath + fileBean.getName();	
 						String torrentPath = finalDirPath + fileName + ".torrent";
 						String moveTorrent = "mv " + torrentPath + " /var/www/html/torrent/";
 						String lnFileString = "ln " + finalDirPath + fileBean.getName() + " /var/www/html/torrent/";
@@ -255,9 +225,39 @@ public class UploadController extends HttpServlet {
 						executeLinuxCmd(moveTorrent);
 						executeLinuxCmd(lnFileString);
 						
-					
 						
-						System.out.println("命令路径为："+makeTorrentString);
+						//在这插入数据库
+		                try {
+							if (MovieDao.getInstance().getConnection() != null) {
+								//连接成功	
+								if (!MovieDao.getInstance().ifExsts(movieName)) {
+									//插入表
+									
+									MovieBean movie = new MovieBean();
+									movie.name = movieName;
+									movie.details = movieDetails;
+									movie.datasourcePath = finalDirPath + fileBean.getName();
+                					movie.imagePathString = "";
+                					movie.torrentpathString = FINAL_TORRENT_PATH_STRING + fileName + ".torrent";
+									MovieDao.getInstance().addMovie(movie);
+								}else {
+									//更新表
+									
+									String sqlString = "update movie set details=?,datasourcePath=?,torrentpathString=? where name=?";
+									PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
+									preparedStatement.setString(1, movieDetails);
+									preparedStatement.setString(2,finalDirPath + fileBean.getName());
+									preparedStatement.setString(3,FINAL_TORRENT_PATH_STRING + fileName + ".torrent");
+									preparedStatement.setString(4, movieName);
+									preparedStatement.executeUpdate();
+									preparedStatement.close();
+								}
+							}
+							
+						}catch (SQLException e) {
+							// TODO: handle exception
+							e.printStackTrace();
+						}
 									  }
 				}).start();
                 
@@ -305,6 +305,43 @@ public class UploadController extends HttpServlet {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    private static InetAddress getLocalHostLANAddress() throws UnknownHostException {
+        try {
+            InetAddress candidateAddress = null;
+            // 遍历所有的网络接口
+            for (Enumeration ifaces = NetworkInterface.getNetworkInterfaces(); ifaces.hasMoreElements();) {
+                NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
+                // 在所有的接口下再遍历IP
+                for (Enumeration inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
+                    InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
+                    if (!inetAddr.isLoopbackAddress()) {// 排除loopback类型地址
+                        if (inetAddr.isSiteLocalAddress()) {
+                            // 如果是site-local地址，就是它了
+                            return inetAddr;
+                        } else if (candidateAddress == null) {
+                            // site-local类型的地址未被发现，先记录候选地址
+                            candidateAddress = inetAddr;
+                        }
+                    }
+                }
+            }
+            if (candidateAddress != null) {
+                return candidateAddress;
+            }
+            // 如果没有发现 non-loopback地址.只能用最次选的方案
+            InetAddress jdkSuppliedAddress = InetAddress.getLocalHost();
+            if (jdkSuppliedAddress == null) {
+                throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
+            }
+            return jdkSuppliedAddress;
+        } catch (Exception e) {
+            UnknownHostException unknownHostException = new UnknownHostException(
+                    "Failed to determine LAN address: " + e);
+            unknownHostException.initCause(e);
+            throw unknownHostException;
+        }
     }
 
     @Override
