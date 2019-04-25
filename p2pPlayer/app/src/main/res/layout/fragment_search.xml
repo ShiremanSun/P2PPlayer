@@ -19,16 +19,34 @@
             android:singleLine="true"
             android:textColor="@color/colorBarText"
             android:textColorHint="@color/colorBarText"
-            android:textSize="12sp"
+            android:textSize="13sp"
             android:background="@drawable/searchedittext_background"
             android:drawableStart="@drawable/seek"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
     </android.support.v7.widget.Toolbar>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_gravity="center"
+            android:text="种子搜索神器"
+            android:textSize="30sp"
+            android:textColor="@color/text_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+       <ViewStub
+           android:id="@+id/viewStub"
+           android:layout="@layout/loading_view"
+           android:layout_gravity="center"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             />
+    </FrameLayout>
+
 </LinearLayout>

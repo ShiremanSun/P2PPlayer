@@ -44,7 +44,7 @@ public class ImageUploadServlet extends HttpServlet {
 	private Logger logger = LoggerFactory.getLogger(UploadController.class);
 	
 	private static String finalDirPath = "/var/www/html/images/";
-	private static String ipAddressString = "http://192.138.48.43";
+	private static String ipAddressString = "http://192.168.31.156/images/";
        
 	private String movieName;
 	private String movieDetails;
@@ -123,14 +123,14 @@ public class ImageUploadServlet extends HttpServlet {
 						movieBean.name = movieName;
 						movieBean.details = "";
 						movieBean.datasourcePath = "";
-						movieBean.imagePathString = dirString;
+						movieBean.imagePathString = ipAddressString+filenameString;
 						movieBean.torrentpathString = "";
 						MovieDao.getInstance().addMovie(movieBean);
 					}else {
 						//更新表格
 						String sqlString = "update movie set imagePathString=? where name=?";
 						PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
-						preparedStatement.setString(1, dirString);
+						preparedStatement.setString(1, ipAddressString + filenameString);
 						preparedStatement.setString(2, movieName);
 						preparedStatement.executeUpdate();
 						preparedStatement.close();

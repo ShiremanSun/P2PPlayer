@@ -13,6 +13,7 @@ import okhttp3.*
  */
 object HttpUtil {
 
+
     private val okHttpClient = OkHttpClient()
     fun sendRequest (url : String) : Response  {
         val request = Request.Builder().url(url).build()

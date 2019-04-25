@@ -85,12 +85,12 @@ public class MovieDao {
 	
 	
 	public void CreateTable() throws SQLException{
-		 String creatsql = "CREATE TABLE IF NOT EXISTS movie(" + "name varchar(100) not null  PRIMARY KEY,"
-		           + "details varchar(100)," 
-				   + "datasourcePath varchar(100)," 
-		           + "imagePathString varchar(100)," 
-				   + "torrentpathString varchar(100),"
-				   + "INDEX nameindex(name(100))"
+		 String creatsql = "CREATE TABLE IF NOT EXISTS movie(" + "name varchar(1000) not null  PRIMARY KEY,"
+		           + "details text," 
+				   + "datasourcePath text," 
+		           + "imagePathString text," 
+				   + "torrentpathString text,"
+				   + "INDEX nameindex(name(1000))"
 		           + ")charset=utf8";
 		 PreparedStatement statement = getConnection().prepareStatement(creatsql);
 		 statement.execute();

@@ -44,6 +44,8 @@ public class UploadController extends HttpServlet {
 
     private static String finalDirPath = "/var/www/html/datasource/";
     private static final String FINAL_TORRENT_PATH_STRING = "/var/www/html/torrrent/";
+    private static final String IPDATASOURCEADDRESS = "http://192.168.31.156/datasource/";
+    private static final String IPTORRENTADDRESS = "http://192.168.31.156/torrent/";
     private String movieName;
     private String movieDetails;
     
@@ -236,9 +238,9 @@ public class UploadController extends HttpServlet {
 									MovieBean movie = new MovieBean();
 									movie.name = movieName;
 									movie.details = movieDetails;
-									movie.datasourcePath = finalDirPath + fileBean.getName();
+									movie.datasourcePath = IPDATASOURCEADDRESS + fileBean.getName();
                 					movie.imagePathString = "";
-                					movie.torrentpathString = FINAL_TORRENT_PATH_STRING + fileName + ".torrent";
+                					movie.torrentpathString = IPTORRENTADDRESS + fileName + ".torrent";
 									MovieDao.getInstance().addMovie(movie);
 								}else {
 									//更新表

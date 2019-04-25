@@ -7,7 +7,6 @@
 
     <ImageView
         android:id="@+id/movie_cav"
-        android:scaleType="centerInside"
         android:layout_width="140dp"
         android:layout_height="match_parent"
          />

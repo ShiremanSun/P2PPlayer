@@ -1,9 +1,10 @@
-package com.example.sunday.p2pplayer.model
+package com.example.sunday.p2pplayer.search
 
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.example.sunday.p2pplayer.Util.HttpUtil
+import com.example.sunday.p2pplayer.model.MovieBean
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
@@ -11,10 +12,6 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
-import java.io.IOException
 
 /**
  * Created by Sunday on 2019/4/1
@@ -23,7 +20,7 @@ class MyViewModel : ViewModel() {
    val liveData = MutableLiveData<List<MovieBean>>()
 
    fun search(string: String) {
-       val url = "http://192.168.43.68:8080/BigFileUpload/search?movie_name="+string
+       val url = "http://192.168.31.156:8080/BigFileUpload/search?movie_name="+string
 
         Observable.create<List<MovieBean>> { emitter ->
            val response = HttpUtil.sendRequest(url)

@@ -29,4 +29,6 @@ class MyFragmentPageAdapter(fm:FragmentManager) : FragmentPagerAdapter(fm) {
     override fun getCount(): Int {
         return 3
     }
+
+
 }

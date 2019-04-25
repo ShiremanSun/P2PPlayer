@@ -5,6 +5,8 @@
     <color name="colorAccent">#FF4081</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="text_gray">#807976</color>
+    <color name="text_shadow">#FFF5F4F3</color>
     <color name="colorWhite">#fff</color>
     <color name="colorBarText">#F0F5E5</color>
+    <color name="app_selection_background">#F2F2F2</color>
 </resources>

@@ -1,5 +1,7 @@
 package com.example.sunday.p2pplayer;
 
+import android.Manifest;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +9,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
+import com.example.sunday.p2pplayer.Util.PermissionUtil;
 import com.example.sunday.p2pplayer.model.MovieBean;
 import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
@@ -43,6 +46,13 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
         ImmersionBar.with(this).navigationBarColor(R.color.colorPrimary).init();
 
+
+
+        PermissionUtil.INSTANCE.requestPermission(this, new String[]{
+                Manifest.permission_group.STORAGE,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.ACCESS_WIFI_STATE,
+        Manifest.permission.READ_PHONE_STATE});
         RadioGroup mRadiaGroup = findViewById(R.id.tab_bar);
         mSearch = findViewById(R.id.tab_search);
         mDownloading = findViewById(R.id.tab_downloading);
@@ -134,10 +144,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     @Override
     public void onPageScrollStateChanged(int i) {
 
-        //如果i==2，表示滑动结束
-        if (i == 2) {
 
-        }
 
     }
 }
