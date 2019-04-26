@@ -54,7 +54,7 @@ public class MyApplication extends MultiDexApplication {
 //            ctx.version[2] = Integer.valueOf(vStrArray[2]);
 //            ctx.version[3] = BuildConfig.VERSION_CODE;
 
-            BTEngine.ctx = ctx;
+
 //            BTEngine.onCtxSetupComplete();
 //            BTEngine.getInstance().start();
 

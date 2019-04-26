@@ -24,7 +24,7 @@ import java.util.regex.Pattern
 import android.support.v4.content.ContextCompat
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
-
+import com.example.sunday.p2pplayer.bittorrent.DownLoadManager
 
 
 /**
@@ -101,8 +101,6 @@ class FragmentSearch : Fragment() {
         override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
             mContext = p0.context
             val view = LayoutInflater.from(mContext).inflate(R.layout.item_movie, p0, false)
-
-
             return ViewHolder(view)
         }
 
@@ -115,7 +113,6 @@ class FragmentSearch : Fragment() {
 
             Glide.with(mContext).load(list[p1].imagePathString).centerCrop().into(p0.imageView)
 
-
             //后端返回的文字
             val spannable = SpannableString(list[p1].name)
             //需要高亮显示的文字
@@ -127,16 +124,17 @@ class FragmentSearch : Fragment() {
             }
             p0.movieDetails.text = list[p1].details
             p0.movieName.text = spannable
+            p0.downloadButton.setOnClickListener({
+                DownLoadManager.downloadTorrent(list[p1].torrentPathString, list[p1].name)
+            })
         }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val imageView = view.findViewById<ImageView>(R.id.movie_cav)!!
             val movieName = view.findViewById<TextView>(R.id.movie_title)!!
             val movieDetails = view.findViewById<TextView>(R.id.movie_detail)!!
-            val playButton = view.findViewById<Button>(R.id.movie_play)
-            val downloadButton = view.findViewById<Button>(R.id.movie_download)
-
-
+            val playButton = view.findViewById<Button>(R.id.movie_play)!!
+            val downloadButton = view.findViewById<Button>(R.id.movie_download)!!
 
         }
     }

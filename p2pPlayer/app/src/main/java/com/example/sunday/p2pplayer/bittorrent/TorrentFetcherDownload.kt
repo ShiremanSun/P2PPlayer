@@ -3,30 +3,20 @@ package com.example.sunday.p2pplayer.bittorrent
 import android.annotation.SuppressLint
 import android.util.Log
 import com.example.sunday.p2pplayer.Util.HttpUtil
-import com.example.sunday.p2pplayer.transfer.BittorrentDownload
 import com.example.sunday.p2pplayer.transfer.TransferItem
+import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.example.sunday.p2pplayer.transfer.TransferState
 import com.frostwire.jlibtorrent.TorrentInfo
 import java.io.File
 import java.util.*
 
 /**
- * Created by sunday on 19-4-24.
+ *Created by sunday on 19-4-24.
  */
-class TorrentFetcherDownload : BittorrentDownload {
+class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInfo) : BittorrentDownload {
 
 
-    private val torrentDownloadInfo: TorrentDownloadInfo
     private var state : TransferState
-    constructor(torrentDownloadInfo: TorrentDownloadInfo) {
-
-        this.torrentDownloadInfo = torrentDownloadInfo
-
-        this.state = TransferState.DOWNLOADING_TORRENT
-
-        val runnable = FetcherRunnable()
-        Thread(runnable, "FetcherThread" + torrentDownloadInfo.getDetailsUrl()).start()
-    }
     override fun getName(): String {
         return torrentDownloadInfo.getDisplayName()
     }
@@ -37,7 +27,7 @@ class TorrentFetcherDownload : BittorrentDownload {
     }
 
     override fun getInfoHash(): String {
-        return torrentDownloadInfo.getHash()
+        return ""
     }
 
     override fun getSavePath(): File {
@@ -153,8 +143,8 @@ class TorrentFetcherDownload : BittorrentDownload {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    public fun getTorrentUri() : String{
-        return ""
+    fun getTorrentUri() : String{
+        return torrentDownloadInfo.getTorrentUrl()
     }
 
     private inner class FetcherRunnable : Runnable {
@@ -198,10 +188,10 @@ class TorrentFetcherDownload : BittorrentDownload {
             val ti = TorrentInfo.bdecode(data)
 
 
-           val selection = calculateSelection(ti, torrentDownloadInfo.getRelativePath())
+           //val selection = calculateSelection(ti, torrentDownloadInfo.getRelativePath())
 
 
-            BTEngine.download(ti, null, selection, null, true)
+            BTEngine.downloadFile(ti, null)
         } catch (e: Throwable) {
             Log.e("Error downloading torrent", e.message)
         }
@@ -220,5 +210,11 @@ class TorrentFetcherDownload : BittorrentDownload {
         }
 
         return selection
+    }
+
+    init {
+        this.state = TransferState.DOWNLOADING_TORRENT
+        val runnable = FetcherRunnable()
+        Thread(runnable, "FetcherThread" + torrentDownloadInfo.getTorrentUrl()).start()
     }
 }

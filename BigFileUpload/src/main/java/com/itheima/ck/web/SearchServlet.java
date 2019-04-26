@@ -58,7 +58,8 @@ public class SearchServlet extends HttpServlet {
 			System.out.println(movieBean.datasourcePath);
 			System.out.println(movieBean.details);
 		}
-		JSONArray jsonArray = JSONArray.fromObject(list.get(0));
+		
+		JSONArray jsonArray = JSONArray.fromObject(list);
 		System.out.println(jsonArray+"---" + list.size());
 		PrintWriter writer = response.getWriter();
 		writer.write(jsonArray.toString());

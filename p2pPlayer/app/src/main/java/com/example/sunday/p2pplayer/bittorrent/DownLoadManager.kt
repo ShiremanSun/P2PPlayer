@@ -2,6 +2,7 @@ package com.example.sunday.p2pplayer.bittorrent
 
 import android.content.SharedPreferences
 import android.os.Environment
+import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.masterwok.simpletorrentandroid.TorrentSessionOptions
 import java.util.concurrent.*
 
@@ -14,22 +15,16 @@ object DownLoadManager  {
 
 
     private val CPU_COUNT = Runtime.getRuntime().availableProcessors() +1
-    public val threadPool = ThreadPoolExecutor(CPU_COUNT,
+    private val threadPool = ThreadPoolExecutor(CPU_COUNT,
             CPU_COUNT*2 + 1,
             1L,
             TimeUnit.SECONDS,
             LinkedBlockingQueue()
             )
 
-    private val torrentSessionOptions = TorrentSessionOptions(
-            downloadLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            , onlyDownloadLargestFile = true
-            , enableLogging = false
-            , shouldStream = true
-    )
 
 
-    public fun downloadTorrent(url : String, displayName:String) {
+    fun downloadTorrent(url : String, displayName:String) {
         val runnable= Runnable {
             TransferManager.downloadTorrent(url, displayName)
         }

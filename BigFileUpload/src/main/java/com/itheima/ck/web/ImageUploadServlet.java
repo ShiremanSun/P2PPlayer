@@ -44,7 +44,7 @@ public class ImageUploadServlet extends HttpServlet {
 	private Logger logger = LoggerFactory.getLogger(UploadController.class);
 	
 	private static String finalDirPath = "/var/www/html/images/";
-	private static String ipAddressString = "http://192.168.31.156/images/";
+	private static String ipAddressString = "http://192.168.43.68/images/";
        
 	private String movieName;
 	private String movieDetails;

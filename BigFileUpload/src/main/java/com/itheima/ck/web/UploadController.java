@@ -44,8 +44,8 @@ public class UploadController extends HttpServlet {
 
     private static String finalDirPath = "/var/www/html/datasource/";
     private static final String FINAL_TORRENT_PATH_STRING = "/var/www/html/torrrent/";
-    private static final String IPDATASOURCEADDRESS = "http://192.168.31.156/datasource/";
-    private static final String IPTORRENTADDRESS = "http://192.168.31.156/torrent/";
+    private static final String IPDATASOURCEADDRESS = "http://192.168.43.68/datasource/";
+    private static final String IPTORRENTADDRESS = "http://192.168.43.68/torrent/";
     private String movieName;
     private String movieDetails;
     
@@ -218,7 +218,7 @@ public class UploadController extends HttpServlet {
 						}						
 						
 						System.out.println("本机的IP地址是" + ipString);
-						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+HOSTIP+":6969/announce "+finalDirPath + fileBean.getName();	
+						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+"localhost"+":6969/announce "+finalDirPath + fileBean.getName();	
 						String torrentPath = finalDirPath + fileName + ".torrent";
 						String moveTorrent = "mv " + torrentPath + " /var/www/html/torrent/";
 						String lnFileString = "ln " + finalDirPath + fileBean.getName() + " /var/www/html/torrent/";
@@ -248,8 +248,8 @@ public class UploadController extends HttpServlet {
 									String sqlString = "update movie set details=?,datasourcePath=?,torrentpathString=? where name=?";
 									PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
 									preparedStatement.setString(1, movieDetails);
-									preparedStatement.setString(2,finalDirPath + fileBean.getName());
-									preparedStatement.setString(3,FINAL_TORRENT_PATH_STRING + fileName + ".torrent");
+									preparedStatement.setString(2,IPDATASOURCEADDRESS + fileBean.getName());
+									preparedStatement.setString(3,IPTORRENTADDRESS + fileName + ".torrent");
 									preparedStatement.setString(4, movieName);
 									preparedStatement.executeUpdate();
 									preparedStatement.close();

@@ -20,7 +20,7 @@ class MyViewModel : ViewModel() {
    val liveData = MutableLiveData<List<MovieBean>>()
 
    fun search(string: String) {
-       val url = "http://192.168.31.156:8080/BigFileUpload/search?movie_name="+string
+       val url = "http://192.168.43.68:8080/BigFileUpload/search?movie_name="+string
 
         Observable.create<List<MovieBean>> { emitter ->
            val response = HttpUtil.sendRequest(url)
@@ -28,7 +28,6 @@ class MyViewModel : ViewModel() {
             try {
                 val gson = Gson()
                 val type = object : TypeToken<List<MovieBean>>() {
-
                 }.type
                 val list = gson.fromJson<List<MovieBean>>(
                         response.body()!!.string(),

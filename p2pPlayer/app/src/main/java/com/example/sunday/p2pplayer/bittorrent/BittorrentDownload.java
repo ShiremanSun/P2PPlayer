@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.example.sunday.p2pplayer.transfer;
+package com.example.sunday.p2pplayer.bittorrent;
+
+import com.example.sunday.p2pplayer.transfer.Transfer;
 
 import java.io.File;
 

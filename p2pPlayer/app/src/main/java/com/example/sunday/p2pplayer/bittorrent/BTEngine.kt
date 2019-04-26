@@ -1,21 +1,15 @@
 package com.example.sunday.p2pplayer.bittorrent
 
 import android.annotation.SuppressLint
+import android.os.Environment
 import android.util.Log
 import com.frostwire.jlibtorrent.*
 import com.frostwire.jlibtorrent.alerts.*
+import com.frostwire.jlibtorrent.alerts.AlertType.*
+import com.masterwok.simpletorrentandroid.TorrentSession
+import com.masterwok.simpletorrentandroid.TorrentSessionOptions
 import java.io.File
 import java.util.*
-
-import com.frostwire.jlibtorrent.alerts.AlertType.ADD_TORRENT
-import com.frostwire.jlibtorrent.alerts.AlertType.DHT_BOOTSTRAP
-import com.frostwire.jlibtorrent.alerts.AlertType.EXTERNAL_IP
-import com.frostwire.jlibtorrent.alerts.AlertType.FASTRESUME_REJECTED
-import com.frostwire.jlibtorrent.alerts.AlertType.LISTEN_FAILED
-import com.frostwire.jlibtorrent.alerts.AlertType.LISTEN_SUCCEEDED
-import com.frostwire.jlibtorrent.alerts.AlertType.PEER_LOG
-import com.frostwire.jlibtorrent.alerts.AlertType.TORRENT_LOG
-import java.util.logging.Logger
 
 /**
  * Created by sunday on 19-4-24.
@@ -23,99 +17,68 @@ import java.util.logging.Logger
 object BTEngine : SessionManager() {
 
     private const val TAG = "BTEngine"
-    public lateinit var ctx : BTContext
+
     private val innerListener: InnerListener = InnerListener()
-    init {
-        addListener(innerListener)
-    }
+
+    private val path = Environment.getExternalStorageDirectory().toString() + "/movies"
+    val file = File(path)
+
+    private val torrentSessionOptions = TorrentSessionOptions(
+            downloadLocation = file
+            , onlyDownloadLargestFile = true
+            , enableLogging = false
+            , shouldStream = true
+    )
+    private val sessionParams = SessionParams(torrentSessionOptions.settingsPack)
     private var listener: BTEngineListener? = null
     private val INNER_LISTENER_TYPES = intArrayOf(ADD_TORRENT.swig(), LISTEN_SUCCEEDED.swig(), LISTEN_FAILED.swig(), EXTERNAL_IP.swig(), FASTRESUME_REJECTED.swig(), DHT_BOOTSTRAP.swig(), TORRENT_LOG.swig(), PEER_LOG.swig(), AlertType.LOG.swig())
 
 
-    public fun setBTEListener(btEngineListener: BTEngineListener) {
+    //下载引擎开始工作
+    override fun start() {
+        if (!isRunning){
+            super.start(sessionParams)
+        }
+    }
+
+    fun setBTEListener(btEngineListener: BTEngineListener) {
 
         this.listener = btEngineListener
     }
 
-    internal fun resumeDataFile(infoHash: String): File {
-        return File(ctx.homeDir, infoHash + ".resume")
+     fun resumeDataFile(infoHash: String): File {
+        return File(torrentSessionOptions.downloadLocation, infoHash + ".resume")
     }
 
-    internal fun resumeTorrentFile(infoHash: String): File {
-        return File(ctx.homeDir, infoHash + ".torrent")
+     fun resumeTorrentFile(infoHash: String): File {
+        return File(torrentSessionOptions.downloadLocation, infoHash + ".torrent")
     }
 
-    fun download(ti: TorrentInfo, saveDir: File?, selection: BooleanArray?, peers: List<TcpEndpoint>?, dontSaveTorrentFile: Boolean) {
+
+    fun downloadFile(ti: TorrentInfo, saveDir: File?) {
+
         var saveDir = saveDir
-        var selection = selection
-        if (swig() == null) {
+        /*if (swig() == null) {
             return
-        }
-
+        }*/
         saveDir = setupSaveDir(saveDir)
         if (saveDir == null) {
             return
         }
-
-        if (selection == null) {
-            selection = BooleanArray(ti.numFiles())
-            Arrays.fill(selection, true)
-        }
-
-        var priorities: Array<Priority>? = null
-
-        val th = find(ti.infoHash())
-        val torrentHandleExists = th != null
-        if (torrentHandleExists) {
-            try {
-                priorities = th!!.filePriorities()
-            } catch (t: Throwable) {
-                t.printStackTrace()
-            }
-
-        } else {
-            priorities = Priority.array(Priority.IGNORE, ti.numFiles())
-        }
-        if (priorities != null) {
-            var changed = false
-            for (i in selection.indices) {
-                if (selection[i] && i < priorities.size && priorities[i] == Priority.IGNORE) {
-                    priorities[i] = Priority.NORMAL
-                    changed = true
-                }
-            }
-
-            if (!changed) { // nothing to do
-                return
-            }
-        }
-        download(ti, saveDir, priorities, null, peers)
-
-    }
-
-    private fun download(ti: TorrentInfo, saveDir: File, priorities: Array<Priority>?, resumeFile: File?, peers: List<TcpEndpoint>?) {
-
         var th: TorrentHandle? = find(ti.infoHash())
 
         if (th != null) {
             // found a download with the same hash, just adjust the priorities if needed
-            if (priorities != null) {
-                if (ti.numFiles() != priorities.size) {
-                    throw IllegalArgumentException("The priorities length should be equals to the number of files")
-                }
 
-                th.prioritizeFiles(priorities)
-                fireDownloadUpdate(th)
-                th.resume()
-            } else {
                 // did they just add the entire torrent (therefore not selecting any priorities)
-                val wholeTorrentPriorities = Priority.array(Priority.NORMAL, ti.numFiles())
-                th.prioritizeFiles(wholeTorrentPriorities)
-                fireDownloadUpdate(th)
-                th.resume()
-            }
-        } else { // new download
-            download(ti, saveDir, resumeFile, priorities, peers)
+            val wholeTorrentPriorities = Priority.array(Priority.NORMAL, ti.numFiles())
+            th.prioritizeFiles(wholeTorrentPriorities)
+            fireDownloadUpdate(th)
+            th.resume()
+
+        } else {
+            // new download
+            download(ti, saveDir, null, null, null)
             th = find(ti.infoHash())
             if (th != null) {
                 fireDownloadUpdate(th)
@@ -137,17 +100,9 @@ object BTEngine : SessionManager() {
     }
     //  设置存储位置
     private fun setupSaveDir(saveDir: File?): File? {
-        var result: File? = null
+        val result: File?
 
-        if (saveDir == null) {
-            if (ctx.dataDir != null) {
-                result = ctx.dataDir
-            } else {
-                Log.w("","Unable to setup save dir path, review your logic, both saveDir and ctx.dataDir are null.")
-            }
-        } else {
-            result = saveDir
-        }
+        result = saveDir ?: torrentSessionOptions.downloadLocation
 
 //        val fs = Platforms.get().fileSystem()
 //
@@ -189,14 +144,31 @@ object BTEngine : SessionManager() {
         }
     }
 
+    private fun printAlert(alert: Alert<*>) {
+       System.out.print(TAG+alert)
+    }
+    private fun onDhtBootstrap() {
+        //long nodes = stats().dhtNodes();
+        //LOG.info("DHT bootstrap, total nodes=" + nodes);
+    }
+
+    private fun onFastresumeRejected(alert: FastresumeRejectedAlert) {
+        try {
+            Log.w(TAG,"Failed to load fastresume data, path: " + alert.filePath() +
+                    ", operation: " + alert.operation() + ", error: " + alert.error().message())
+        } catch (e: Throwable) {
+            Log.e(TAG,"Error logging fastresume rejected alert", e)
+        }
+
+    }
     private fun onExternalIpAlert(alert: ExternalIpAlert) {
         try {
             // libtorrent perform all kind of tests
             // to avoid non usable addresses
             val address = alert.externalAddress().toString()
-            Log.i("External IP: " + address)
+            Log.i(TAG,"External IP: " + address)
         } catch (e: Throwable) {
-            LOG.error("Error saving reported external ip", e)
+            Log.e(TAG, "Error saving reported external ip", e)
         }
 
     }
@@ -233,5 +205,12 @@ object BTEngine : SessionManager() {
             Log.e("Unable to create and/or notify the new download", e.message)
         }
 
+    }
+    init {
+        addListener(innerListener)
+        if (!file.exists()) {
+            file.mkdirs()
+        }
+        start()
     }
 }

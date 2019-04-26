@@ -60,12 +60,14 @@ public class MovieDao {
 		return resultSet.next();
 	}
 	
-	//查询电影
+	//查询电影,按匹配度
 	public List<MovieBean> query(String name) throws SQLException{
 		List<MovieBean> list = new ArrayList<MovieBean>();
-		String searchString = "select * from movie where name=?";
+		String searchString = "select * from movie where name like ? order by replace(name,?,?) limit 10";
 		PreparedStatement statement = getConnection().prepareStatement(searchString);
-		statement.setString(1, name);
+		statement.setString(1, "%" + name + "%");
+		statement.setString(2, name);
+		statement.setString(3, "");
 		ResultSet resultSet = statement.executeQuery();
 		while(resultSet.next()) {
 			MovieBean movieBean = new MovieBean();

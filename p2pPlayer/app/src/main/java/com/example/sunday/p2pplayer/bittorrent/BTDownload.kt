@@ -2,7 +2,6 @@ package com.example.sunday.p2pplayer.bittorrent
 
 import android.annotation.SuppressLint
 import android.util.Log
-import com.example.sunday.p2pplayer.transfer.BittorrentDownload
 import com.example.sunday.p2pplayer.transfer.TransferItem
 import com.example.sunday.p2pplayer.transfer.TransferState
 import com.frostwire.jlibtorrent.*
@@ -20,7 +19,7 @@ import kotlin.collections.HashMap
 /**
  * Created by sunday on 19-4-25.
  */
-class BTDownload : BittorrentDownload {
+class BTDownload(private val engine: BTEngine, private val th: TorrentHandle) : BittorrentDownload {
     private val SAVE_RESUME_RESOLUTION_MILLIS: Long = 10000
     private val ALERT_TYPES = intArrayOf(AlertType.TORRENT_FINISHED.swig(),
             AlertType.TORRENT_REMOVED.swig(),
@@ -31,8 +30,6 @@ class BTDownload : BittorrentDownload {
     private val EXTRA_DATA_KEY = "extra_data"
     private val WAS_PAUSED_EXTRA_KEY = "was_paused"
 
-    private val engine: BTEngine
-    private val th: TorrentHandle
     private val savePath: File
     private val created: Date
     private val piecesTracker: PiecesTracker?
@@ -50,18 +47,6 @@ class BTDownload : BittorrentDownload {
     private val innerListener: InnerListener
 
     private var predominantFileExtension: String? = null
-    constructor( engine : BTEngine, th : TorrentHandle){
-        this.engine = engine
-        this.th = th
-        savePath = File(th.savePath())
-        this.created = Date(th.status().addedTime())
-        val ti = th.torrentFile()
-        this.piecesTracker = if (ti != null) PiecesTracker(ti) else null
-        this.parts = if (ti != null) File(savePath, "." + ti.infoHash() + ".parts") else null
-        this.extra = createExtra()
-        this.innerListener = InnerListener()
-        engine.addListener(innerListener)
-    }
 
     fun setListener(listener: BTDownloadListener) {
         this.listener = listener
@@ -254,7 +239,7 @@ class BTDownload : BittorrentDownload {
     }
 
     override fun remove(deleteData: Boolean) {
-        remove(false, deleteData)    }
+        remove(true, deleteData)    }
 
     @SuppressLint("LongLogTag")
     override fun getContentSavePath(): File? {
@@ -308,7 +293,18 @@ class BTDownload : BittorrentDownload {
         th.setFlags(TorrentFlags.AUTO_MANAGED)
         th.resume()
 
-        doResumeData(true)    }
+        doResumeData(true)
+    }
+
+    fun wasPause() : Boolean{
+        var flag  = false
+        if (extra.containsKey(WAS_PAUSED_EXTRA_KEY)) {
+            if (extra[WAS_PAUSED_EXTRA_KEY] != null) {
+                flag = extra[WAS_PAUSED_EXTRA_KEY]?.toBoolean() ?: false
+            }
+        }
+        return flag
+    }
 
     override fun remove(deleteTorrent: Boolean, deleteData: Boolean) {
         val infoHash = this.infoHash
@@ -479,6 +475,17 @@ class BTDownload : BittorrentDownload {
 
     }
 
+    public fun isPartial() : Boolean{
+        if (th.isValid) {
+            val priorities = th.filePriorities()
+            priorities.forEach {
+                if (Priority.IGNORE == it) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
     @SuppressLint("LongLogTag")
     private fun getIncompleteFiles(): Set<File> {
@@ -553,6 +560,17 @@ class BTDownload : BittorrentDownload {
                 map.put(k, e.string())
             }
         }
+    }
+
+    init {
+        savePath = File(th.savePath())
+        this.created = Date(th.status().addedTime())
+        val ti = th.torrentFile()
+        this.piecesTracker = if (ti != null) PiecesTracker(ti) else null
+        this.parts = if (ti != null) File(savePath, "." + ti.infoHash() + ".parts") else null
+        this.extra = createExtra()
+        this.innerListener = InnerListener()
+        engine.addListener(innerListener)
     }
 
 }

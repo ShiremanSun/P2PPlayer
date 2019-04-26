@@ -11,6 +11,7 @@ import android.widget.RadioGroup;
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.example.sunday.p2pplayer.Util.PermissionUtil;
 import com.example.sunday.p2pplayer.model.MovieBean;
+import com.example.sunday.p2pplayer.transfer.TransferManager;
 import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
 
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         setContentView(R.layout.activity_main);
 
         ImmersionBar.with(this).navigationBarColor(R.color.colorPrimary).init();
+
 
 
 

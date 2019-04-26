@@ -22,7 +22,7 @@
             android:textSize="18sp"
             android:layout_margin="2dp"
             android:text="这是标题"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/text_gray"
             android:layout_width="match_parent"
             android:layout_height="30dp" />
         <TextView
