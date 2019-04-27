@@ -1,7 +1,7 @@
 package com.example.sunday.p2pplayer.transfer
 
 /**
- * Created by sunday on 19-4-24.
+ *Created by sunday on 19-4-24.
  */
 enum class TransferState {
     FINISHING,

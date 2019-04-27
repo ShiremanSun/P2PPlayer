@@ -3,6 +3,7 @@ package com.example.sunday.p2pplayer;
 import android.Manifest;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.RadioButton;
@@ -36,10 +37,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     private ViewPager mViewPager;
 
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,11 +47,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
 
 
-        PermissionUtil.INSTANCE.requestPermission(this, new String[]{
-                Manifest.permission_group.STORAGE,
-                Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.ACCESS_WIFI_STATE,
-        Manifest.permission.READ_PHONE_STATE});
         RadioGroup mRadiaGroup = findViewById(R.id.tab_bar);
         mSearch = findViewById(R.id.tab_search);
         mDownloading = findViewById(R.id.tab_downloading);

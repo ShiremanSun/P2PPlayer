@@ -39,15 +39,15 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     }
 
     override fun getSize(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return -1
     }
 
-    override fun getCreated(): Date {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getCreated(): Date? {
+        return null
     }
 
     override fun getState(): TransferState {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return state
     }
 
     override fun getBytesReceived(): Long {
@@ -59,7 +59,7 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     }
 
     override fun getDownloadSpeed(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0
     }
 
     override fun magnetUri(): String {
@@ -67,11 +67,11 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     }
 
     override fun getUploadSpeed(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0
     }
 
     override fun getConnectedPeers(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0
     }
 
     override fun isDownloading(): Boolean {
@@ -79,23 +79,23 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     }
 
     override fun getTotalPeers(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0
     }
 
     override fun getConnectedSeeds(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0
     }
 
     override fun getTotalSeeds(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0
     }
 
     override fun getETA(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return -1
     }
 
     override fun getProgress(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0
     }
 
     override fun isComplete(): Boolean {

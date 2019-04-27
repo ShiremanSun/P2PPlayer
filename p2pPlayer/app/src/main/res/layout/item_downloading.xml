@@ -43,14 +43,13 @@
 
             <TextView
                 android:id="@+id/view_transfer_list_item_title"
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="[Title]" />
 
             <ProgressBar
                 android:id="@+id/view_transfer_list_item_progress"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="3dp"
                 android:layout_marginBottom="7dp"
                 android:layout_marginTop="7dp"
@@ -131,6 +130,21 @@
                     style="@style/TransfersList.Item"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/view_transfer_detail_peer_item_arrow_up"
+                    android:text="[Speed]" />
+                <ImageView
+                    android:id="@+id/view_transfer_detail_peer_item_arrow_up"
+                    android:layout_width="wrap_content"
+                    android:layout_height="15dp"
+                    android:layout_toStartOf="@+id/view_transfer_list_item_speed_upload"
+                    android:contentDescription="@null"
+                    android:src="@drawable/transfers_triangle_upward"
+                    android:tint="@color/text_gray" />
+                <TextView
+                    android:id="@+id/view_transfer_list_item_speed_upload"
+                    style="@style/TransfersList.Item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:text="[Speed]" />
             </RelativeLayout>
@@ -138,7 +152,7 @@
         </LinearLayout>
 
 
-        <ImageButton
+        <!--<ImageButton
             android:id="@+id/view_transfer_list_item_button_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -147,7 +161,7 @@
             android:contentDescription="@null"
             android:scaleType="fitCenter"
             android:visibility="gone"
-            android:src="@drawable/my_files_details_icon" />
+            android:src="@drawable/my_files_details_icon" />-->
 
     </LinearLayout>
     <View

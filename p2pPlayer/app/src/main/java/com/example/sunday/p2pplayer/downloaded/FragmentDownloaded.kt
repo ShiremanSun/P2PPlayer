@@ -21,7 +21,7 @@ class FragmentDownloaded : Fragment() {
     public val list = ArrayList<MovieBean>()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
        val view = inflater.inflate(R.layout.fragment_downloaded, container, false)
-        recyclerView = view.findViewById(R.id.recyclerView3)
+        //recyclerView = view.findViewById(R.id.recyclerView3)
         val toolBar = view.findViewById<Toolbar>(R.id.toolBar)
         ImmersionBar.setTitleBar(activity, toolBar)
         return view

@@ -218,7 +218,7 @@ public class UploadController extends HttpServlet {
 						}						
 						
 						System.out.println("本机的IP地址是" + ipString);
-						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+"localhost"+":6969/announce "+finalDirPath + fileBean.getName();	
+						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+"192.168.43.68"+":6969/announce "+finalDirPath + fileBean.getName();	
 						String torrentPath = finalDirPath + fileName + ".torrent";
 						String moveTorrent = "mv " + torrentPath + " /var/www/html/torrent/";
 						String lnFileString = "ln " + finalDirPath + fileBean.getName() + " /var/www/html/torrent/";

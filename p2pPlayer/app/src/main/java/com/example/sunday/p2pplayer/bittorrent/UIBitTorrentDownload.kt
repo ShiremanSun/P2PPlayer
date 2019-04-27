@@ -111,7 +111,7 @@ class UIBitTorrentDownload(private val dl: BTDownload) : BittorrentDownload {
     }
 
     override fun getProgress(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return dl.progress
     }
 
     override fun isComplete(): Boolean {
@@ -181,8 +181,8 @@ class UIBitTorrentDownload(private val dl: BTDownload) : BittorrentDownload {
 
     private inner class StatusListener : BTDownloadListener{
         override fun finished(dl: BTDownload) {
+            //下载完成，应该添加到下载完成列表
 
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
         override fun removed(dl: BTDownload, incompleteFiles: Set<File>) {

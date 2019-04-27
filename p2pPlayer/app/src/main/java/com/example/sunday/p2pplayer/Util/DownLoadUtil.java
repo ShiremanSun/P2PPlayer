@@ -16,6 +16,4 @@ public class DownLoadUtil {
     SimpleClient client = new SimpleClient();
     InetAddress address;
 
-
-
 }

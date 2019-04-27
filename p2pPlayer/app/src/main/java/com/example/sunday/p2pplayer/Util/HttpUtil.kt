@@ -1,12 +1,10 @@
 package com.example.sunday.p2pplayer.Util
 
-import android.arch.lifecycle.LiveData
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
-import android.os.Message
-import com.example.sunday.p2pplayer.model.MovieBean
-import io.reactivex.Observable
-import okhttp3.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 
 /**
  * Created by Sunday on 2019/4/1

@@ -10,7 +10,7 @@ data class MovieBean(
         val torrentPathString : String,
         val imagePathString : String,
         val details : String,
-        val datasourcePath : String) : Serializable{
+        val dataSourcePath : String) : Serializable{
     //序列化ID
     private  val serialVersionUID = -5809782578272943999L
 

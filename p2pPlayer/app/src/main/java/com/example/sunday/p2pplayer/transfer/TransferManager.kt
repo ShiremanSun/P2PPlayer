@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 object TransferManager{
 
-    private val bitTorrentDownloads = CopyOnWriteArrayList<BittorrentDownload>()
+    public val bitTorrentDownloads = CopyOnWriteArrayList<BittorrentDownload>()
     private val bitTorrentDownloadMap = ConcurrentHashMap<String, BittorrentDownload>(0)
 
     private val alreadyDownloadingMonitor = Any()

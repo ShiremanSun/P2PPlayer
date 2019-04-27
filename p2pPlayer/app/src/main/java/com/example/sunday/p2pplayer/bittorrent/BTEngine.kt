@@ -58,9 +58,9 @@ object BTEngine : SessionManager() {
     fun downloadFile(ti: TorrentInfo, saveDir: File?) {
 
         var saveDir = saveDir
-        /*if (swig() == null) {
+        if (swig() == null) {
             return
-        }*/
+        }
         saveDir = setupSaveDir(saveDir)
         if (saveDir == null) {
             return
@@ -68,9 +68,7 @@ object BTEngine : SessionManager() {
         var th: TorrentHandle? = find(ti.infoHash())
 
         if (th != null) {
-            // found a download with the same hash, just adjust the priorities if needed
-
-                // did they just add the entire torrent (therefore not selecting any priorities)
+            // did they just add the entire torrent (therefore not selecting any priorities)
             val wholeTorrentPriorities = Priority.array(Priority.NORMAL, ti.numFiles())
             th.prioritizeFiles(wholeTorrentPriorities)
             fireDownloadUpdate(th)
