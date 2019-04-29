@@ -10,38 +10,20 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 object TransferManager{
 
-    public val bitTorrentDownloads = CopyOnWriteArrayList<BittorrentDownload>()
-    private val bitTorrentDownloadMap = ConcurrentHashMap<String, BittorrentDownload>(0)
+    val bitTorrentDownloads = CopyOnWriteArrayList<BittorrentDownload>()
+     val bitTorrentDownloadMap = ConcurrentHashMap<String, BittorrentDownload>(0)
 
-    private val alreadyDownloadingMonitor = Any()
 
     init {
         loadTorrentTask()
     }
 
     fun downloadTorrent(url : String, displayName : String) : BittorrentDownload? {
-        val fixedUrl = url.trim()
-        if (isAlreadyDownloadingTorrentByUri(fixedUrl)) {
-            return null
-        }
         val u = Uri.parse(url)
-        val download = TorrentFetcherDownload(TorrentUrlInfo(u.toString(), displayName))
-        bitTorrentDownloads.add(download)
-        bitTorrentDownloadMap.put(download.infoHash, download)
-        return download
+         return TorrentFetcherDownload(TorrentUrlInfo(u.toString(), displayName))
 
     }
 
-    private fun isAlreadyDownloadingTorrentByUri(uri: String): Boolean {
-        synchronized(alreadyDownloadingMonitor) {
-            bitTorrentDownloads
-                    .filterIsInstance<TorrentFetcherDownload>()
-                    .map { it.getTorrentUri() }
-                    .filter { it == uri }
-                    .forEach { return true }
-        }
-        return false
-    }
 
     fun remove(transfer : Transfer) : Boolean{
         bitTorrentDownloadMap.remove((transfer as BittorrentDownload).infoHash)
@@ -52,28 +34,19 @@ object TransferManager{
         bitTorrentDownloadMap.clear()
         bitTorrentDownloads.clear()
         BTEngine.setBTEListener(object : BTEngineListener {
-
             override fun downloadAdded(engine: BTEngine, dl: BTDownload) {
-                val savePath = dl.savePath
-                val name = dl.name
-                if (name != null && name.contains("fetch_magnet")) {
-                    return
-                }
-                if (savePath != null && savePath.toString().contains("fetch_magnet")) {
-                    return
-                }
                 val uiBitTorrentDownload = UIBitTorrentDownload(dl)
                 bitTorrentDownloads.add(uiBitTorrentDownload)
                 bitTorrentDownloadMap.put(dl.infoHash, uiBitTorrentDownload)
             }
-
             override fun downloadUpdate(engine: BTEngine, dl: BTDownload) {
                 val download = bitTorrentDownloadMap[dl.infoHash]
                 if (download is UIBitTorrentDownload) {
                     download.updateUI(dl)
                 }
             }
-
         })
+        //初始化的时候，检查一遍种子文件，然后开启下载，引擎里会判断每个种子的下载状态
+        BTEngine.restoreDownloads()
     }
 }

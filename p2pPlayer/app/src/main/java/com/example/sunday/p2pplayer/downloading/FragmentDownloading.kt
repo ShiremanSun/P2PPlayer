@@ -3,6 +3,8 @@ package com.example.sunday.p2pplayer.downloading
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -24,7 +26,6 @@ import com.example.sunday.p2pplayer.transfer.TransferState
 import com.gyf.immersionbar.ImmersionBar
 import java.lang.ref.WeakReference
 import java.util.*
-import kotlin.Comparator
 
 /**
  * Created by Sunday on 2019/4/15
@@ -34,15 +35,14 @@ class FragmentDownloading : Fragment(){
     companion object {
         private const val TAG = "DownLoading"
     }
-
     private lateinit var recyclerView : RecyclerView
-    private val mTimerTask = MyTimerTask(this)
     private val mTimer = Timer()
     lateinit var viewModel : DownloadingViewModel
 
     private val list = ArrayList<BittorrentDownload>()
 
 
+    private val mHandler = Handler(Looper.getMainLooper())
     private val comparator = TransferComparator()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,16 +61,22 @@ class FragmentDownloading : Fragment(){
         viewModel.downloadList.observe(this, Observer {
             list.clear()
             if (it != null) {
-                //先排序
-                Collections.sort(it, comparator)
+
+                //把下载完成的过滤掉，然后排序
+                Collections.sort(filter(it), comparator)
                 list.addAll(it)
             }
             adapter.notifyDataSetChanged()
         })
-        mTimer.schedule(mTimerTask, 0,2000)
+
+        mHandler.post(MyTimerTask(this))
         return view
     }
 
+    private fun filter(list : List<Transfer>) : List<Transfer> {
+        //返回正在下载的
+        return list.filter { isDownloading(it) }
+    }
 
     inner class MyAdapter : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
         override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder{
@@ -80,6 +86,14 @@ class FragmentDownloading : Fragment(){
 
         override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
             p0.updateUI(p1)
+            p0.itemView.setOnClickListener({
+                val download = list[p1]
+                when(download.state) {
+                    TransferState.DOWNLOADING -> download.pause()
+                    TransferState.PAUSED -> download.resume()
+                    else -> download.pause()
+                }
+            })
         }
 
         override fun getItemCount(): Int {
@@ -170,15 +184,14 @@ class FragmentDownloading : Fragment(){
         return state === TransferState.FINISHED || state === TransferState.COMPLETE
     }
 
-     class MyTimerTask(fragment: FragmentDownloading) : TimerTask() {
+     class MyTimerTask(fragment: FragmentDownloading) : Runnable {
          private val weakReference = WeakReference<FragmentDownloading>(fragment)
         override fun run() {
             if (weakReference.get() == null || !weakReference.get()!!.isVisible) {
                 return
             }
-            weakReference.get()?.activity?.runOnUiThread({
-                weakReference.get()!!.viewModel.downloadList.value = TransferManager.bitTorrentDownloads
-            })
+            weakReference.get()?.viewModel?.downloadList?.value = TransferManager.bitTorrentDownloads
+            weakReference.get()?.mHandler?.postDelayed(this, 2000)
         }
 
     }

@@ -6,6 +6,8 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
@@ -13,6 +15,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,10 +27,13 @@ import android.widget.*
 import com.bumptech.glide.Glide
 import com.example.sunday.p2pplayer.MainActivity
 import com.example.sunday.p2pplayer.R
+import com.example.sunday.p2pplayer.Util.HttpUtil
 import com.example.sunday.p2pplayer.Util.PermissionUtil
+import com.example.sunday.p2pplayer.Util.addDownloadAnimation
 import com.example.sunday.p2pplayer.bittorrent.DownLoadManager
 import com.example.sunday.p2pplayer.model.MovieBean
 import com.example.sunday.p2pplayer.movieplay.VideoActivity
+import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.gyf.immersionbar.ImmersionBar
 import java.util.*
 import java.util.regex.Pattern
@@ -123,15 +129,37 @@ class FragmentSearch : Fragment() {
                                 Toast.makeText(activity,"拒绝了权限，无法下载",Toast.LENGTH_SHORT).show()
                             }
                             override fun permissionGranted() {
+                                TransferManager.bitTorrentDownloads.forEach {
+                                    val dataSourcePath = mList[p0.adapterPosition].dataSourcePath;
+                                    val displayName = dataSourcePath.substring(dataSourcePath.lastIndexOf('/') + 1)
+                                    if (TextUtils.equals(displayName, it.name)) {
+                                        Toast.makeText(activity,"任务已存在",Toast.LENGTH_SHORT).show()
+                                        return
+                                    }
+                                }
+                                //添加下载的动画
+                                addDownloadAnimation(p0.downloadButton,
+                                            (activity as MainActivity).mDownloading,
+                                            activity as MainActivity)
                                 DownLoadManager.downloadTorrent(mList[p0.adapterPosition].torrentPathString, mList[p0.adapterPosition].name)
                             }
-                        } )
+                        }, this@FragmentSearch)
             })
 
             p0.playButton.setOnClickListener({
-                val intent = Intent(activity, VideoActivity::class.java)
-                intent.putExtra(MOVIE_URL, mList[p1].dataSourcePath)
-                activity?.startActivity(intent)
+                PermissionUtil.requestPermission(activity!!,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE),
+                        object : PermissionUtil.IPermissionListener {
+                            override fun permissionDeny() {
+                                Toast.makeText(activity,"拒绝了权限，无法下载",Toast.LENGTH_SHORT).show()
+                            }
+                            override fun permissionGranted() {
+                                val intent = Intent(activity, VideoActivity::class.java)
+                                intent.putExtra(MOVIE_URL, mList[p0.adapterPosition].dataSourcePath)
+                                activity?.startActivity(intent)
+                            }
+                        }, this@FragmentSearch)
             })
         }
 

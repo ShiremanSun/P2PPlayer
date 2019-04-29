@@ -23,6 +23,7 @@ class MyViewModel : ViewModel() {
    fun search(string: String) {
        if (TextUtils.isEmpty(string)) {
            liveData.value = ArrayList(0)
+           return
        }
        val url = "http://192.168.43.68:8080/BigFileUpload/search?movie_name="+string
 
@@ -46,6 +47,7 @@ class MyViewModel : ViewModel() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<List<MovieBean>>{
                     override fun onError(e: Throwable) {
+                        e.printStackTrace()
                     }
 
                     override fun onComplete() {

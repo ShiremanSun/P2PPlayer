@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".movieplay.VideoActivity">
 
-
     <com.pili.pldroid.player.widget.PLVideoView
         android:id="@+id/videoView"
         android:layout_width="match_parent"

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -33,7 +34,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     private RadioButton mSearch;
     private RadioButton mDownloaded;
-    private RadioButton mDownloading;
+    public RadioButton mDownloading;
+
 
     private ViewPager mViewPager;
 
@@ -43,9 +45,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         setContentView(R.layout.activity_main);
 
         ImmersionBar.with(this).navigationBarColor(R.color.colorPrimary).init();
-
-
-
 
         RadioGroup mRadiaGroup = findViewById(R.id.tab_bar);
         mSearch = findViewById(R.id.tab_search);

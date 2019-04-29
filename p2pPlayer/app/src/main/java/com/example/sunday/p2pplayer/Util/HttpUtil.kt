@@ -19,14 +19,5 @@ object HttpUtil {
     }
 
     //得到网络媒体的封面
-    fun getNetVideoBitmap(url : String) : Bitmap?{
 
-        val mediaMetadataRetriever = MediaMetadataRetriever()
-        mediaMetadataRetriever.setDataSource(url, HashMap())
-       val bitmap = mediaMetadataRetriever.frameAtTime
-
-        mediaMetadataRetriever.release()
-
-        return bitmap
-    }
 }

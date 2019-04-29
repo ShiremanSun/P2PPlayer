@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import java.security.AccessControlContext
 import java.util.jar.Manifest
@@ -14,7 +15,7 @@ import java.util.jar.Manifest
 object PermissionUtil {
 
     private lateinit var permissionListener : IPermissionListener
-    fun requestPermission(context: Activity,permissions: Array<String>, permissionListener : IPermissionListener) {
+    fun requestPermission(context: Activity,permissions: Array<String>, permissionListener : IPermissionListener, fragment: Fragment) {
         this.permissionListener = permissionListener
         val list = ArrayList<String>()
         permissions.filter { ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
@@ -23,7 +24,7 @@ object PermissionUtil {
         if (list.isEmpty()) {
             permissionListener.permissionGranted()
         } else {
-            ActivityCompat.requestPermissions(context, list.toArray(arrayOfNulls(list.size)),0)
+            fragment.requestPermissions(list.toArray(arrayOfNulls(list.size)),0)
         }
     }
     fun onResultPermission(requestCode : Int, permissions : Array<out String>, grantResults: IntArray) {

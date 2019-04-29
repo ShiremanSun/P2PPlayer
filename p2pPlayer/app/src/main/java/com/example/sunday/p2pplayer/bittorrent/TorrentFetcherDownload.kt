@@ -109,6 +109,7 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     override fun remove(deleteData: Boolean) {
         state = TransferState.CANCELED
         TransferManager.remove(this)
+
     }
 
     override fun getContentSavePath(): File {
@@ -143,78 +144,44 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun getTorrentUri() : String{
-        return torrentDownloadInfo.getTorrentUrl()
-    }
 
-    private inner class FetcherRunnable : Runnable {
 
-        override fun run() {
+    @SuppressLint("LongLogTag")
+    private fun startDownload() {
+        if (state === TransferState.CANCELED) {
+            return
+        }
+        try {
+            val data: ByteArray?
+            val url = torrentDownloadInfo.getTorrentUrl()
+            //开始下载种子
+            data = HttpUtil.sendRequest(url).body()?.bytes()
+
             if (state === TransferState.CANCELED) {
                 return
             }
-
-            try {
-                val data: ByteArray?
-                val url = torrentDownloadInfo.getTorrentUrl()
-                //开始下载种子
-               data = HttpUtil.sendRequest(url).body()?.bytes()
-
-                if (state === TransferState.CANCELED) {
-                    return
+            if (data != null) {
+                try {
+                    //先把当前的下载种子任务移除
+                    remove(false)
+                    val ti = TorrentInfo.bdecode(data)
+                    //开始下载文件
+                    BTEngine.downloadFile(ti, null)
+                } catch (e : Throwable) {
+                    Log.e("Error downloading torrent", e.message)
                 }
-
-                if (data != null) {
-                    try {
-                        downloadTorrent(data)
-                    } finally {
-                        remove(false)
-                    }
-                } else {
-                    state = TransferState.ERROR
-                }
-            } catch (e: Throwable) {
+            } else {
                 state = TransferState.ERROR
-
             }
-
-        }
-    }
-
-    //开始真正的文件下载工作
-    @SuppressLint("LongLogTag")
-    private fun downloadTorrent(data : ByteArray) {
-        try {
-            val ti = TorrentInfo.bdecode(data)
-
-
-           //val selection = calculateSelection(ti, torrentDownloadInfo.getRelativePath())
-
-
-            BTEngine.downloadFile(ti, null)
         } catch (e: Throwable) {
-            Log.e("Error downloading torrent", e.message)
+            state = TransferState.ERROR
         }
 
     }
-
-    private fun calculateSelection(ti: TorrentInfo, path: String): BooleanArray {
-        val selection = BooleanArray(ti.numFiles())
-
-        val fs = ti.files()
-        for (i in selection.indices) {
-            val filePath = fs.filePath(i)
-            if (path.endsWith(filePath) || filePath.endsWith(path)) {
-                selection[i] = true
-            }
-        }
-
-        return selection
-    }
-
     init {
         this.state = TransferState.DOWNLOADING_TORRENT
-        val runnable = FetcherRunnable()
-        Thread(runnable, "FetcherThread" + torrentDownloadInfo.getTorrentUrl()).start()
+        TransferManager.bitTorrentDownloads.add(this)
+        TransferManager.bitTorrentDownloadMap.put(infoHash, this)
+        startDownload()
     }
 }

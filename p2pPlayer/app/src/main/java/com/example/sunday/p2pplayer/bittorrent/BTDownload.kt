@@ -30,8 +30,8 @@ class BTDownload(private val engine: BTEngine, private val th: TorrentHandle) : 
     private val EXTRA_DATA_KEY = "extra_data"
     private val WAS_PAUSED_EXTRA_KEY = "was_paused"
 
-    private val savePath: File
-    private val created: Date
+    private val savePath: File = File(th.savePath())
+    private val created: Date = Date(th.status().addedTime())
     private val piecesTracker: PiecesTracker?
     private val parts: File?
 
@@ -563,8 +563,6 @@ class BTDownload(private val engine: BTEngine, private val th: TorrentHandle) : 
     }
 
     init {
-        savePath = File(th.savePath())
-        this.created = Date(th.status().addedTime())
         val ti = th.torrentFile()
         this.piecesTracker = if (ti != null) PiecesTracker(ti) else null
         this.parts = if (ti != null) File(savePath, "." + ti.infoHash() + ".parts") else null

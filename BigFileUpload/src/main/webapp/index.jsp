@@ -31,12 +31,12 @@
 <div class="container">
 
   <div style="margin-top:50px">
-  	请输入电影名称:<input id="name" type="text">
+  	<textarea id="name" placeholder="请输入电影名称"></textarea>
   </div>
   <div style="margin-top:50px">
-  	请输入电影描述:<input id="details" type="text" style="width:300px;height:100px">
+  	<textarea id="details"  style="width:300px;height:100px" placeholder="请输入电影描述"></textarea>
   </div>
-  <div class="row bottom-20px">
+  <div class="row bottom-20px" >
   	<div >
   		<div id="thelist" class="uploader-list"></div>
   		<div id="picker">选择电影</div>

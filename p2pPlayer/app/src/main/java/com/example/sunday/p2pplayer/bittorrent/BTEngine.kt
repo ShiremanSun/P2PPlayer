@@ -1,28 +1,37 @@
+@file:Suppress("NAME_SHADOWING")
+
 package com.example.sunday.p2pplayer.bittorrent
 
 import android.annotation.SuppressLint
+import android.app.DownloadManager
 import android.os.Environment
 import android.util.Log
 import com.frostwire.jlibtorrent.*
 import com.frostwire.jlibtorrent.alerts.*
 import com.frostwire.jlibtorrent.alerts.AlertType.*
-import com.masterwok.simpletorrentandroid.TorrentSession
+import com.frostwire.jlibtorrent.swig.entry
 import com.masterwok.simpletorrentandroid.TorrentSessionOptions
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import java.io.File
 import java.util.*
 
 /**
- * Created by sunday on 19-4-24.
+ *Created by sunday on 19-4-24.
  */
 object BTEngine : SessionManager() {
 
     private const val TAG = "BTEngine"
 
+    private val TORRENT_ORIG_PATH_KEY = "torrent_orig_path"
     private val innerListener: InnerListener = InnerListener()
 
     private val path = Environment.getExternalStorageDirectory().toString() + "/movies"
-    val file = File(path)
+    private val file = File(path)
+    private val torrentPath = path + "/torrents"
+    private val torrentFiles = File(torrentPath)
 
+    private val restoreDownloadsQueue  = LinkedList<RestoreDownloadTask>()
     private val torrentSessionOptions = TorrentSessionOptions(
             downloadLocation = file
             , onlyDownloadLargestFile = true
@@ -51,7 +60,7 @@ object BTEngine : SessionManager() {
     }
 
      fun resumeTorrentFile(infoHash: String): File {
-        return File(torrentSessionOptions.downloadLocation, infoHash + ".torrent")
+        return File(torrentFiles, infoHash + ".torrent")
     }
 
 
@@ -68,14 +77,12 @@ object BTEngine : SessionManager() {
         var th: TorrentHandle? = find(ti.infoHash())
 
         if (th != null) {
-            // did they just add the entire torrent (therefore not selecting any priorities)
-            val wholeTorrentPriorities = Priority.array(Priority.NORMAL, ti.numFiles())
-            th.prioritizeFiles(wholeTorrentPriorities)
             fireDownloadUpdate(th)
             th.resume()
 
         } else {
             // new download
+            saveResumeTorrent(ti)
             download(ti, saveDir, null, null, null)
             th = find(ti.infoHash())
             if (th != null) {
@@ -84,6 +91,35 @@ object BTEngine : SessionManager() {
         }
     }
 
+    @SuppressLint("LongLogTag")
+    private fun saveResumeTorrent(ti: TorrentInfo) {
+
+        try {
+            val name = getEscapedFilename(ti)
+
+            val e = ti.toEntry().swig()
+            e.dict().set(TORRENT_ORIG_PATH_KEY, entry(torrentFile(name).absolutePath))
+            val arr = Vectors.byte_vector2bytes(e.bencode())
+            FileUtils.writeByteArrayToFile(resumeTorrentFile(ti.infoHash().toString()), arr)
+        } catch (e: Throwable) {
+            Log.w("Error saving resume torrent", e)
+        }
+
+    }
+    private fun torrentFile(name: String): File {
+        return File(torrentFiles, name + ".torrent")
+    }
+    private fun getEscapedFilename(ti: TorrentInfo): String {
+        var name: String? = ti.name()
+        if (name == null || name.isEmpty()) {
+            name = ti.infoHash().toString()
+        }
+        return escapeFilename(name)
+    }
+
+    private fun escapeFilename(s: String): String {
+        return s.replace("[\\\\/:*?\"<>|\\[\\]]+".toRegex(), "_")
+    }
     @SuppressLint("LongLogTag")
     private fun fireDownloadUpdate(th: TorrentHandle) {
         try {
@@ -96,23 +132,63 @@ object BTEngine : SessionManager() {
         }
 
     }
+
+    fun restoreDownloads() {
+        if (swig() == null) {
+            return
+        }
+        if (!file.exists() || !torrentFiles.exists()) {
+            return
+        }
+        torrentFiles.listFiles { _, name ->
+            name != null && FilenameUtils.getExtension(name).toLowerCase() == "torrent" }
+                ?.forEach {
+                    val infoHash = FilenameUtils.getBaseName(it.name)
+                    if (infoHash != null) {
+                        val resumeFile = resumeDataFile(infoHash)
+                        val savePath = readSavePath(infoHash)
+                        if (setupSaveDir(savePath) == null) {
+                            return
+                        }
+                        restoreDownloadsQueue.add(RestoreDownloadTask(it, null, null, resumeFile))
+                    }
+        }
+        runNextRestoreDownloadTask()
+    }
+
+    private fun runNextRestoreDownloadTask() {
+        var task: RestoreDownloadTask? = null
+        try {
+            if (!restoreDownloadsQueue.isEmpty()) {
+                task = restoreDownloadsQueue.poll()
+            }
+        } catch (t: Throwable) {
+
+            // on Android, LinkedList's .poll() implementation throws a NoSuchElementException
+        }
+        if (task != null) {
+            DownLoadManager.threadPool.execute(task)
+        }
+    }
+    //从resume文件中读取,获得存贮位置
+    private fun readSavePath(infoHash: String): File? {
+        var savePath: File? = null
+
+        try {
+            val arr = FileUtils.readFileToByteArray(resumeDataFile(infoHash))
+            val e = entry.bdecode(Vectors.bytes2byte_vector(arr))
+            savePath = File(e.dict().get("save_path").string())
+        } catch (e: Throwable) {
+            // can't recover original torrent path
+        }
+
+        return savePath
+    }
     //  设置存储位置
     private fun setupSaveDir(saveDir: File?): File? {
         val result: File?
 
         result = saveDir ?: torrentSessionOptions.downloadLocation
-
-//        val fs = Platforms.get().fileSystem()
-//
-//        if (result != null && !fs.isDirectory(result) && !fs.mkdirs(result)) {
-//            result = null
-//            LOG.warn("Failed to create save dir to download")
-//        }
-//
-//        if (result != null && !fs.canWrite(result)) {
-//            result = null
-//            LOG.warn("Failed to setup save dir with write access")
-//        }
 
         return result
     }
@@ -210,5 +286,18 @@ object BTEngine : SessionManager() {
             file.mkdirs()
         }
         start()
+    }
+
+    private  class RestoreDownloadTask(private val torrent: File, private val saveDir: File?, private val priorities: Array<Priority>?, private val resume: File) : Runnable {
+
+        @SuppressLint("LongLogTag")
+        override fun run() {
+            try {
+                download(TorrentInfo(torrent), saveDir, resume, priorities, null)
+            } catch (e: Throwable) {
+                Log.e("Unable to restore download from previous session. (" + torrent.absolutePath + ")", e.message)
+            }
+
+        }
     }
 }

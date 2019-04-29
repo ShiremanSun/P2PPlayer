@@ -11,11 +11,9 @@ import java.util.concurrent.*
  */
 object DownLoadManager  {
 
-    private  val sharesPreferenceListener : SharedPreferences.OnSharedPreferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key -> onPreferenceChanged(key) }
-
 
     private val CPU_COUNT = Runtime.getRuntime().availableProcessors() +1
-    private val threadPool = ThreadPoolExecutor(CPU_COUNT,
+    val threadPool = ThreadPoolExecutor(CPU_COUNT,
             CPU_COUNT*2 + 1,
             1L,
             TimeUnit.SECONDS,

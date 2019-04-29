@@ -43,22 +43,20 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
 
         mVideoView = findViewById(R.id.videoView)
 
-       val options = AVOptions()
+        val options = AVOptions()
         // the unit of timeout is ms
-       options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000)
+        options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000)
        // 1 -> hw codec enable, 0 -> disable [recommended]
-        options.setInteger(AVOptions.KEY_MEDIACODEC, AVOptions.MEDIA_CODEC_AUTO)
+        options.setInteger(AVOptions.KEY_MEDIACODEC, AVOptions.MEDIA_CODEC_HW_DECODE)
 
-       options.setString(AVOptions.KEY_CACHE_DIR, Config.DEFAULT_CACHE_DIR)
+        options.setString(AVOptions.KEY_CACHE_DIR, Config.DEFAULT_CACHE_DIR)
 
        /* options.setInteger(AVOptions.KEY_VIDEO_DATA_CALLBACK, 1)
 
         options.setInteger(AVOptions.KEY_AUDIO_DATA_CALLBACK, 1)*/
 
-       mVideoView.setAVOptions(options)
-       mVideoView.isLooping = false
-
-
+        mVideoView.setAVOptions(options)
+        mVideoView.isLooping = false
         mVideoView.setMediaController(mMediaController)
 
         // Set some listeners
@@ -74,16 +72,17 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
         mVideoView.setVideoPath(url)
 
 
-
-
-
     }
 
-    override fun onResume() {
-        mVideoView.start()
-        super.onResume()
+    override fun onPause() {
+        mVideoView.pause()
+        super.onPause()
     }
 
+    override fun onDestroy() {
+        mVideoView.stopPlayback()
+        super.onDestroy()
+    }
     override fun onCompletion() {
         mMediaController.refreshProgress()
     }
