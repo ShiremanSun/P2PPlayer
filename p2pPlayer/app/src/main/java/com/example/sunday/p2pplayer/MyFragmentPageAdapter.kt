@@ -12,10 +12,12 @@ import com.example.sunday.p2pplayer.search.FragmentSearch
  */
 class MyFragmentPageAdapter(fm:FragmentManager) : FragmentPagerAdapter(fm) {
 
-    val fragmentSearch = FragmentSearch()
-    val fragmentDownloading = FragmentDownloading()
-    val fragmentDownloaded = FragmentDownloaded()
-
+    private val fragmentSearch = FragmentSearch()
+    private val fragmentDownloading = FragmentDownloading()
+    private val fragmentDownloaded = FragmentDownloaded()
+    init {
+        fragmentDownloading.bitDownloadListener = fragmentDownloaded
+    }
     override fun getItem(p0: Int): Fragment {
         var fragment: Fragment? = null
         when (p0) {

@@ -3,7 +3,6 @@
 package com.example.sunday.p2pplayer.bittorrent
 
 import android.annotation.SuppressLint
-import android.app.DownloadManager
 import android.os.Environment
 import android.util.Log
 import com.frostwire.jlibtorrent.*
@@ -156,6 +155,7 @@ object BTEngine : SessionManager() {
         runNextRestoreDownloadTask()
     }
 
+    @Synchronized
     private fun runNextRestoreDownloadTask() {
         var task: RestoreDownloadTask? = null
         try {
@@ -205,8 +205,8 @@ object BTEngine : SessionManager() {
                 ADD_TORRENT -> {
                     val torrentAlert = alert as TorrentAlert<*>
                     fireDownloadAdded(torrentAlert)
-                    //应该是继续下载吧
-                    //runNextRestoreDownloadTask()
+                    //
+                    runNextRestoreDownloadTask()
                 }
                 LISTEN_SUCCEEDED -> onListenSucceeded(alert as ListenSucceededAlert)
                 LISTEN_FAILED -> onListenFailed(alert as ListenFailedAlert)
@@ -269,9 +269,7 @@ object BTEngine : SessionManager() {
             val th = find(alert.handle().infoHash())
             if (th != null) {
                 val dl = BTDownload(this, th)
-                if (listener != null) {
-                    listener!!.downloadAdded(this, dl)
-                }
+                listener?.downloadAdded(this, dl)
             } else {
                 Log.i("torrent was not successfully added","")
             }

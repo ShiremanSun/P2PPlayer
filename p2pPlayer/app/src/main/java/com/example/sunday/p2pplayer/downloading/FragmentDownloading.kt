@@ -41,7 +41,7 @@ class FragmentDownloading : Fragment(){
 
     private val list = ArrayList<BittorrentDownload>()
 
-
+    lateinit var bitDownloadListener : CompleteListener
     private val mHandler = Handler(Looper.getMainLooper())
     private val comparator = TransferComparator()
 
@@ -61,7 +61,6 @@ class FragmentDownloading : Fragment(){
         viewModel.downloadList.observe(this, Observer {
             list.clear()
             if (it != null) {
-
                 //把下载完成的过滤掉，然后排序
                 Collections.sort(filter(it), comparator)
                 list.addAll(it)
@@ -191,11 +190,12 @@ class FragmentDownloading : Fragment(){
                 return
             }
             weakReference.get()?.viewModel?.downloadList?.value = TransferManager.bitTorrentDownloads
+            TransferManager.bitTorrentDownloads.filter { weakReference.get()?.isCompleted(it) ?:false }
+                    .forEach { weakReference.get()?.bitDownloadListener?.complete(it) }
             weakReference.get()?.mHandler?.postDelayed(this, 2000)
         }
 
     }
-
     class TransferComparator : Comparator<Transfer> {
         override fun compare(o1: Transfer?, o2: Transfer?): Int {
             try {
@@ -217,6 +217,10 @@ class FragmentDownloading : Fragment(){
     override fun onDestroy() {
         mTimer.cancel()
         super.onDestroy()
+    }
+
+    interface CompleteListener{
+        fun complete(bittorrentDownload: BittorrentDownload)
     }
 
 }
