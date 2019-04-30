@@ -36,12 +36,12 @@ class FragmentDownloading : Fragment(){
         private const val TAG = "DownLoading"
     }
     private lateinit var recyclerView : RecyclerView
-    private val mTimer = Timer()
+
     lateinit var viewModel : DownloadingViewModel
 
     private val list = ArrayList<BittorrentDownload>()
 
-    lateinit var bitDownloadListener : CompleteListener
+    var bitDownloadListener : CompleteListener? = null
     private val mHandler = Handler(Looper.getMainLooper())
     private val comparator = TransferComparator()
 
@@ -62,8 +62,9 @@ class FragmentDownloading : Fragment(){
             list.clear()
             if (it != null) {
                 //把下载完成的过滤掉，然后排序
-                Collections.sort(filter(it), comparator)
-                list.addAll(it)
+                val newList = filter(it)
+                Collections.sort(newList, comparator)
+                list.addAll(newList)
             }
             adapter.notifyDataSetChanged()
         })
@@ -72,7 +73,7 @@ class FragmentDownloading : Fragment(){
         return view
     }
 
-    private fun filter(list : List<Transfer>) : List<Transfer> {
+    private fun filter(list : List<BittorrentDownload>) : List<BittorrentDownload> {
         //返回正在下载的
         return list.filter { isDownloading(it) }
     }
@@ -161,7 +162,7 @@ class FragmentDownloading : Fragment(){
         }
     }
 
-    private fun isDownloading(transfer: Transfer): Boolean {
+    private fun isDownloading(transfer: BittorrentDownload): Boolean {
         val state = transfer.state
         return state === TransferState.CHECKING ||
                 state === TransferState.DOWNLOADING ||
@@ -178,10 +179,7 @@ class FragmentDownloading : Fragment(){
         return transfer.state === TransferState.SEEDING
     }
 
-    private fun isCompleted(transfer: Transfer): Boolean {
-        val state = transfer.state
-        return state === TransferState.FINISHED || state === TransferState.COMPLETE
-    }
+
 
      class MyTimerTask(fragment: FragmentDownloading) : Runnable {
          private val weakReference = WeakReference<FragmentDownloading>(fragment)
@@ -190,10 +188,14 @@ class FragmentDownloading : Fragment(){
                 return
             }
             weakReference.get()?.viewModel?.downloadList?.value = TransferManager.bitTorrentDownloads
-            TransferManager.bitTorrentDownloads.filter { weakReference.get()?.isCompleted(it) ?:false }
+            TransferManager.bitTorrentDownloads.filter { isCompleted(it) }
                     .forEach { weakReference.get()?.bitDownloadListener?.complete(it) }
             weakReference.get()?.mHandler?.postDelayed(this, 2000)
         }
+         private inline fun isCompleted(transfer: Transfer): Boolean {
+             val state = transfer.state
+             return state === TransferState.FINISHED || state === TransferState.COMPLETE || state === TransferState.SEEDING
+         }
 
     }
     class TransferComparator : Comparator<Transfer> {
@@ -209,13 +211,11 @@ class FragmentDownloading : Fragment(){
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        Log.d("Downloading",isVisibleToUser.toString())
 
         super.setUserVisibleHint(isVisibleToUser)
     }
 
     override fun onDestroy() {
-        mTimer.cancel()
         super.onDestroy()
     }
 

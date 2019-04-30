@@ -1,8 +1,10 @@
 <resources>
-    <string name="app_name">p2pPlayer</string>
+    <string name="app_name">妙蛙种子</string>
     <string name="tab_search">主页</string>
     <string name="tab_downloading">正在下载</string>
     <string name="tab_downloaded">已下载</string>
     <string name="play">播放</string>
     <string name="download">缓存</string>
+    <string name="buffering">正在缓冲……</string>
+    <string name="error">出错了</string>
 </resources>

@@ -1,19 +1,14 @@
 package com.example.sunday.p2pplayer;
 
-import android.Manifest;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.LinearLayout;
+import android.util.Log;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
-import com.example.sunday.p2pplayer.Util.PermissionUtil;
 import com.example.sunday.p2pplayer.model.MovieBean;
-import com.example.sunday.p2pplayer.transfer.TransferManager;
 import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
 
@@ -44,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d("MainActivity", "onCreate");
         ImmersionBar.with(this).navigationBarColor(R.color.colorPrimary).init();
 
         RadioGroup mRadiaGroup = findViewById(R.id.tab_bar);

@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.lang.invoke.VolatileCallSite;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
@@ -54,6 +55,8 @@ public class UploadController extends HttpServlet {
     private HttpServletRequest request;
     
     private String fileName;
+    
+    
     
     private static final String HOSTIP = "188.131.249.47"; 
 
@@ -186,86 +189,92 @@ public class UploadController extends HttpServlet {
             //如果上传完毕
             if (files.length == chunks) {
                 // 合并文件..不用合并到MD5文件夹下
-                Path realFile = Paths.get(finalDirPath, fileBean.getName());
-                realFile = Files.createFile(realFile);
-                
-                // 设置权限
-                FileUtils.authorizationAll(realFile);
-                for (int i = 0; i < fileBean.getChunks(); i++) {
-                    // 获取每个分片
-                    tempFileName = fileName + "_" + i + "_tmp";
-                    Path itemPath = Paths.get(uploadDirPath, tempFileName);
-                    byte[] bytes = Files.readAllBytes(itemPath);
-                    Files.write(realFile, bytes, StandardOpenOption.APPEND);
-                    //写完后删除掉临时文件.
-                    Files.delete(itemPath);
-                }
-                //删除MD5文件夹
-                new File(finalDirPath + param.getMd5()).delete();
-                
-                
-                //制作种子
-                new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						String ipString="";
-						try {
-							ipString = getLocalHostLANAddress().getHostAddress();
-						} catch (UnknownHostException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}						
-						
-						System.out.println("本机的IP地址是" + ipString);
-						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+"192.168.43.68"+":6969/announce "+finalDirPath + fileBean.getName();	
-						String torrentPath = finalDirPath + fileName + ".torrent";
-						String moveTorrent = "mv " + torrentPath + " /var/www/html/torrent/";
-						String lnFileString = "ln " + finalDirPath + fileBean.getName() + " /var/www/html/torrent/";
-						//制作种子
-						UploadController.this.executeLinuxCmd(makeTorrentString);
-						executeLinuxCmd(moveTorrent);
-						executeLinuxCmd(lnFileString);
-						
-						
-						//在这插入数据库
-		                try {
-							if (MovieDao.getInstance().getConnection() != null) {
-								//连接成功	
-								if (!MovieDao.getInstance().ifExsts(movieName)) {
-									//插入表
-									
-									MovieBean movie = new MovieBean();
-									movie.name = movieName;
-									movie.details = movieDetails;
-									movie.datasourcePath = IPDATASOURCEADDRESS + fileBean.getName();
-                					movie.imagePathString = "";
-                					movie.torrentpathString = IPTORRENTADDRESS + fileName + ".torrent";
-									MovieDao.getInstance().addMovie(movie);
-								}else {
-									//更新表
-									
-									String sqlString = "update movie set details=?,datasourcePath=?,torrentpathString=? where name=?";
-									PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
-									preparedStatement.setString(1, movieDetails);
-									preparedStatement.setString(2,IPDATASOURCEADDRESS + fileBean.getName());
-									preparedStatement.setString(3,IPTORRENTADDRESS + fileName + ".torrent");
-									preparedStatement.setString(4, movieName);
-									preparedStatement.executeUpdate();
-									preparedStatement.close();
-								}
-							}
-							
-						}catch (SQLException e) {
-							// TODO: handle exception
-							e.printStackTrace();
-						}
-									  }
-				}).start();
-                
-                logger.info("合并文件{}成功", fileName);
+            	   Path  realFile = Paths.get(finalDirPath, fileBean.getName());
+            	 if (!Files.exists(realFile)) {
+            		 synchronized (UploadController.class) {
+                 		if (!Files.exists(realFile)) {
+                 			 realFile = Files.createFile(realFile);
+                 			// 设置权限
+                             //FileUtils.authorizationAll(realFile);
+                             for (int i = 0; i < fileBean.getChunks(); i++) {
+                                 // 获取每个分片
+                                 tempFileName = fileName + "_" + i + "_tmp";
+                                 System.out.println("文件名是"+tempFileName);
+                                 Path itemPath = Paths.get(uploadDirPath, tempFileName);
+                                 byte[] bytes = Files.readAllBytes(itemPath);
+                                 Files.write(realFile, bytes, StandardOpenOption.APPEND);
+                                 //写完后删除掉临时文件.
+                                 Files.delete(itemPath);
+                             }
+                             //删除MD5文件夹
+                             new File(finalDirPath + param.getMd5()).delete();
+                            
+                             //制作种子
+                             new Thread(new Runnable() {
+             					
+             					@Override
+             					public void run() {
+             						String ipString="";
+             						try {
+             							ipString = getLocalHostLANAddress().getHostAddress();
+             						} catch (UnknownHostException e1) {
+             							// TODO Auto-generated catch block
+             							e1.printStackTrace();
+             						}						
+             						
+             						//System.out.println("本机的IP地址是" + ipString);
+             						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+"192.168.43.68"+":6969/announce "+finalDirPath + fileBean.getName();	
+             						String torrentPath = finalDirPath + fileName + ".torrent";
+             						String moveTorrent = "mv " + torrentPath + " /var/www/html/torrent/";
+             						String lnFileString = "ln " + finalDirPath + fileBean.getName() + " /var/www/html/torrent/";
+             						//制作种子
+             						UploadController.this.executeLinuxCmd(makeTorrentString);
+             						executeLinuxCmd(moveTorrent);
+             						executeLinuxCmd(lnFileString);
+             						
+             						
+             						//在这插入数据库
+             		                try {
+             							if (MovieDao.getInstance().getConnection() != null) {
+             								//连接成功	
+             								if (!MovieDao.getInstance().ifExsts(movieName)) {
+             									//插入表
+             									
+             									MovieBean movie = new MovieBean();
+             									movie.name = movieName;
+             									movie.details = movieDetails;
+             									movie.datasourcePath = IPDATASOURCEADDRESS + fileBean.getName();
+                             					movie.imagePathString = "";
+                             					movie.torrentpathString = IPTORRENTADDRESS + fileName + ".torrent";
+             									MovieDao.getInstance().addMovie(movie);
+             								}else {
+             									//更新表
+             					
+             									String sqlString = "update movie set details=?,datasourcePath=?,torrentpathString=? where name=?";
+             									PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
+             									preparedStatement.setString(1, movieDetails);
+             									preparedStatement.setString(2,IPDATASOURCEADDRESS + fileBean.getName());
+             									preparedStatement.setString(3,IPTORRENTADDRESS + fileName + ".torrent");
+             									preparedStatement.setString(4, movieName);
+             									preparedStatement.executeUpdate();
+             									preparedStatement.close();
+             								}
+             							}
+             							
+             						}catch (SQLException e) {
+             							// TODO: handle exception
+             							e.printStackTrace();
+             						}
+             									  }
+             				}).start();
+                             
+                            // logger.info("合并文件{}成功", fileName);
+                         
+     					}
+     				}
+				}
             }
-        }
+         }
     }
     
     public void Merge() throws IOException{
@@ -288,12 +297,12 @@ public class UploadController extends HttpServlet {
     }
     
     public String executeLinuxCmd(String cmd) {
-        System.out.println("got cmd job : " + cmd);
+       
         Runtime run = Runtime.getRuntime();
         try {
             Process process = run.exec(cmd);
             InputStream in = process.getInputStream();
-            // System.out.println("[check] now size \n"+bs.readLine());
+          
             StringBuffer out = new StringBuffer();
             byte[] b = new byte[8192];
             for (int n; (n = in.read(b)) != -1;) {

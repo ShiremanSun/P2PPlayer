@@ -24,6 +24,8 @@ import java.util.*
  */
 private val BYTE_UNITS = arrayOf("b", "KB", "Mb", "Gb", "Tb")
 
+const val  MOVIE_URL = "movie_url"
+
 fun getBytesInHuman(size: Long): String {
     var i = 0
     var sizeFloat = size.toFloat()
@@ -112,17 +114,4 @@ fun addDownloadAnimation(startView : View, endView : View,context : MainActivity
 //创建动画层
 private fun createAnimLayout(activity: MainActivity): ViewGroup {
     return activity.window.decorView as ViewGroup
-}
-
-
-
-fun getNetVideoBitmap(url : String) : Bitmap?{
-
-    val mediaMetadataRetriever = MediaMetadataRetriever()
-    mediaMetadataRetriever.setDataSource(url, HashMap())
-    val bitmap = mediaMetadataRetriever.frameAtTime
-
-    mediaMetadataRetriever.release()
-
-    return bitmap
 }

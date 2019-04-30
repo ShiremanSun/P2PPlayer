@@ -94,7 +94,7 @@
 
         chunked: true, // 分块
         chunkSize: 1 * 1024 * 1024, // 字节 1M分块
-        threads: 20, //开启线程
+        threads: 10, //开启线程
         auto: false,
 
         // 禁掉全局的拖拽功能。这样不会出现图片拖进页面的时候，把图片打开。

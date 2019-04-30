@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/colorBlack"
     android:layout_height="match_parent"
     tools:context=".movieplay.VideoActivity">
 
@@ -10,4 +11,51 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-</LinearLayout>
+    <ImageView
+        android:id="@+id/Cover"
+        android:src="@drawable/cover"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/LoadingView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="@string/buffering"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+    <ImageButton
+        android:id="@+id/back"
+        android:background="@null"
+        android:src="@drawable/back"
+        android:scaleType="fitCenter"
+        android:visibility="invisible"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp" />
+    <TextView
+        android:id="@+id/error_view"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:drawableTop="@drawable/error"
+        android:textColor="@color/colorWhite"
+        android:text="@string/error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</FrameLayout>

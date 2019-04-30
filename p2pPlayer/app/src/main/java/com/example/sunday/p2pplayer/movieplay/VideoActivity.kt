@@ -1,35 +1,57 @@
 package com.example.sunday.p2pplayer.movieplay
 
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.FrameMetrics
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import com.example.sunday.p2pplayer.R
-import com.example.sunday.p2pplayer.MainActivity
 import com.example.sunday.p2pplayer.Util.Config
-import com.example.sunday.p2pplayer.search.FragmentSearch
+import com.example.sunday.p2pplayer.Util.MOVIE_URL
+import com.gyf.immersionbar.ImmersionBar
 import com.pili.pldroid.player.*
-
 import com.pili.pldroid.player.widget.PLVideoView
 import java.util.*
 import kotlin.experimental.and
 
 
-class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
+class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
+        MediaController.OnShownListener, MediaController.OnHiddenListener{
+    override fun onShown() {
+        mBackButton.visibility = View.VISIBLE
+    }
 
+    override fun onHidden() {
+        mBackButton.visibility = View.INVISIBLE
+    }
 
+    private val errorView by lazy {
+        findViewById<TextView>(R.id.error_view)
+    }
 
     private lateinit var mVideoView: PLVideoView
     private lateinit var mMediaController : MediaController
+    private val mCover by lazy {
+        findViewById<ImageView>(R.id.Cover)
+    }
 
+    private val mBackButton by lazy { findViewById<ImageButton>(R.id.back) }
+    private val mLoadingView by lazy {
+        findViewById<View>(R.id.LoadingView)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
 
+        ImmersionBar.with(this).navigationBarColor(R.color.colorWhite).init()
         mMediaController = MediaController(this)
+
+        mMediaController.setOnShownListener(this)
+        mMediaController.setOnHiddenListener(this)
 
         //隐藏状态栏
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -39,7 +61,6 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
 
         mVideoView = findViewById(R.id.videoView)
 
@@ -51,10 +72,9 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
 
         options.setString(AVOptions.KEY_CACHE_DIR, Config.DEFAULT_CACHE_DIR)
 
-       /* options.setInteger(AVOptions.KEY_VIDEO_DATA_CALLBACK, 1)
 
-        options.setInteger(AVOptions.KEY_AUDIO_DATA_CALLBACK, 1)*/
-
+        mVideoView.setBufferingIndicator(mLoadingView)
+        mVideoView.setCoverView(mCover)
         mVideoView.setAVOptions(options)
         mVideoView.isLooping = false
         mVideoView.setMediaController(mMediaController)
@@ -68,16 +88,19 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
         mVideoView.setOnVideoFrameListener(mOnVideoFrameListener)
         mVideoView.setOnAudioFrameListener(mOnAudioFrameListener)
         val intent = intent
-        val url = intent.getStringExtra(FragmentSearch.MOVIE_URL)
+        val url = intent.getStringExtra(MOVIE_URL)
         mVideoView.setVideoPath(url)
 
+        mVideoView.setOnPreparedListener({
+            mVideoView.start()
+        })
+        mBackButton.setOnClickListener {
+            finish()
+        }
 
     }
 
-    override fun onPause() {
-        mVideoView.pause()
-        super.onPause()
-    }
+
 
     override fun onDestroy() {
         mVideoView.stopPlayback()
@@ -87,7 +110,7 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
         mMediaController.refreshProgress()
     }
 
-    private val mOnInfoListener = PLOnInfoListener { what, extra ->
+    private val mOnInfoListener = PLOnInfoListener { what, _ ->
 
         when (what) {
             PLOnInfoListener.MEDIA_INFO_BUFFERING_START -> {
@@ -103,7 +126,7 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
     }
 
     private val mOnErrorListener = PLOnErrorListener { errorCode ->
-        Log.e("", "Error happened, errorCode = $errorCode")
+        Log.e("VideoActivity", "Error happened, errorCode = $errorCode")
         when (errorCode) {
             PLOnErrorListener.ERROR_CODE_IO_ERROR -> {
                 /**
@@ -112,12 +135,17 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
                 /**
                  * SDK will do reconnecting automatically
                  */
-                Log.e("", "IO Error!")
+                Log.e("VideoActivity", "IO Error!")
                 return@PLOnErrorListener false
             }
 
             PLOnErrorListener.ERROR_CODE_SEEK_FAILED -> {
 
+                return@PLOnErrorListener true
+            }
+            PLOnErrorListener.ERROR_CODE_OPEN_FAILED -> {
+                mCover.visibility = View.GONE
+                errorView.visibility = View.VISIBLE
                 return@PLOnErrorListener true
             }
 
@@ -138,16 +166,7 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
     private val mOnVideoFrameListener = PLOnVideoFrameListener { data, size, width, height, format, ts ->
         Log.i("", "onVideoFrameAvailable: $size, $width x $height, $format, $ts")
         if (format == PLOnVideoFrameListener.VIDEO_FORMAT_SEI && bytesToHex(Arrays.copyOfRange(data, 19, 23)) == "74733634") {
-            // If the RTMP stream is from Qiniu
-            // Add &addtssei=true to the end of URL to enable SEI timestamp.
-            // Format of the byte array:
-            // 0:       SEI TYPE                    This is part of h.264 standard.
-            // 1:       unregistered user data      This is part of h.264 standard.
-            // 2:       payload length              This is part of h.264 standard.
-            // 3-18:    uuid                        This is part of h.264 standard.
-            // 19-22:   ts64                        Magic string to mark this stream is from Qiniu
-            // 23-30:   timestamp                   The timestamp
-            // 31:      0x80                        Magic hex in ffmpeg
+
             Log.i("", " timestamp: " + java.lang.Long.valueOf(bytesToHex(Arrays.copyOfRange(data, 23, 31)), 16))
         }
     }
@@ -164,5 +183,9 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener{
         return String(hexChars)
     }
 
+    override fun onStop() {
+        mVideoView.pause()
+        super.onStop()
+    }
 
 }

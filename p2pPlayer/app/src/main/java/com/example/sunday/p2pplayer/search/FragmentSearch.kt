@@ -25,9 +25,12 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.sunday.p2pplayer.MainActivity
 import com.example.sunday.p2pplayer.R
 import com.example.sunday.p2pplayer.Util.HttpUtil
+import com.example.sunday.p2pplayer.Util.MOVIE_URL
 import com.example.sunday.p2pplayer.Util.PermissionUtil
 import com.example.sunday.p2pplayer.Util.addDownloadAnimation
 import com.example.sunday.p2pplayer.bittorrent.DownLoadManager
@@ -43,9 +46,7 @@ import java.util.regex.Pattern
  * Created by Sunday on 2019/4/15
  */
 class FragmentSearch : Fragment() {
-    companion object {
-        const val MOVIE_URL = "movieUrl"
-    }
+
 
 
     private lateinit var mViewModel : MyViewModel
@@ -107,8 +108,10 @@ class FragmentSearch : Fragment() {
 
         override fun onBindViewHolder(p0:ViewHolder, p1: Int) {
 
-            Glide.with(mContext).load(mList[p1].imagePathString).centerCrop().into(p0.imageView)
-
+            Glide.with(mContext).load(mList[p1].imagePathString).
+                    placeholder(R.drawable.noimage).
+                    transform(CenterCrop(), RoundedCorners(10)).
+                    into(p0.imageView)
             //后端返回的文字
             val spannable = SpannableString(mList[p1].name)
             //需要高亮显示的文字

@@ -9,4 +9,5 @@
     <color name="colorWhite">#fff</color>
     <color name="colorBarText">#F0F5E5</color>
     <color name="app_selection_background">#F2F2F2</color>
+    <color name="colorBlack">#000</color>
 </resources>
