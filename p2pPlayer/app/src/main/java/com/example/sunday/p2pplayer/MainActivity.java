@@ -19,6 +19,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import io.vov.vitamio.Vitamio;
 
 @Route(path = "showmovie/mainactivity")
 public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, ViewPager.OnPageChangeListener{
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         setContentView(R.layout.activity_main);
 
         Log.d("MainActivity", "onCreate");
+
         ImmersionBar.with(this).navigationBarColor(R.color.colorPrimary).init();
 
         RadioGroup mRadiaGroup = findViewById(R.id.tab_bar);
@@ -56,8 +58,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         mViewPager.setCurrentItem(0);
 
         mViewPager.addOnPageChangeListener(this);
-
-
 
     }
 

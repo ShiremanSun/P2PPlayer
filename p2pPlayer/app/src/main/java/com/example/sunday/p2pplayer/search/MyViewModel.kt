@@ -48,6 +48,7 @@ class MyViewModel : ViewModel() {
                 .subscribe(object : Observer<List<MovieBean>>{
                     override fun onError(e: Throwable) {
                         e.printStackTrace()
+                        liveData.value = ArrayList(0)
                     }
 
                     override fun onComplete() {

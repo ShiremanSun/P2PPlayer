@@ -20,6 +20,8 @@ import kotlin.collections.HashMap
  *Created by sunday on 19-4-25.
  */
 class BTDownload(private val engine: BTEngine, private val th: TorrentHandle) : BittorrentDownload {
+
+
     private val SAVE_RESUME_RESOLUTION_MILLIS: Long = 10000
     private val ALERT_TYPES = intArrayOf(AlertType.TORRENT_FINISHED.swig(),
             AlertType.TORRENT_REMOVED.swig(),
@@ -319,14 +321,7 @@ class BTDownload(private val engine: BTEngine, private val th: TorrentHandle) : 
             }
         }
 
-        if (deleteTorrent) {
-            //删除下载文件
-//            val torrent = engine.readTorrentPath(infoHash)
-//            if (torrent != null) {
-//                //删除下载的文件
-//            }
-        }
-
+        //删除种子和resume文件
         engine.resumeDataFile(infoHash).delete()
         engine.resumeTorrentFile(infoHash).delete()
     }

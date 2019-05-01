@@ -1,0 +1,70 @@
+[
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_ic_launcher.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/ic_launcher.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-mdpi-v4_ic_launcher.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-mdpi-v4/ic_launcher.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_scrubber_control_focused_holo.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/scrubber_control_focused_holo.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable_scrubber_control_selector_holo.xml.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable/scrubber_control_selector_holo.xml"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_scrubber_primary_holo.9.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/scrubber_primary_holo.9.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_scrubber_control_disabled_holo.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/scrubber_control_disabled_holo.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4_ic_launcher.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-hdpi-v4/ic_launcher.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_mediacontroller_play.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/mediacontroller_play.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable_scrubber_progress_horizontal_holo_dark.xml.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable/scrubber_progress_horizontal_holo_dark.xml"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-ldpi-v4_ic_launcher.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-ldpi-v4/ic_launcher.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/layout_mediacontroller.xml.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/layout/mediacontroller.xml"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_scrubber_secondary_holo.9.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/scrubber_secondary_holo.9.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_scrubber_track_holo_dark.9.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/scrubber_track_holo_dark.9.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_scrubber_control_pressed_holo.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/scrubber_control_pressed_holo.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_mediacontroller_pause.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/mediacontroller_pause.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4_scrubber_control_normal_holo.png.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable-xhdpi-v4/scrubber_control_normal_holo.png"
+    },
+    {
+        "merged": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/res/merged/androidTest/debug/drawable_mediacontroller_button.xml.flat",
+        "source": "/home/sunday/桌面/p2p/p2pPlayer/p2pPlayer/vitamio/build/intermediates/packaged_res/debug/drawable/mediacontroller_button.xml"
+    }
+]

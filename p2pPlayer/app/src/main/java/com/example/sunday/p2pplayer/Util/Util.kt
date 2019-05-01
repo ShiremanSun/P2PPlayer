@@ -2,19 +2,14 @@ package com.example.sunday.p2pplayer.Util
 
 import android.animation.Animator
 import android.animation.ValueAnimator
-import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Path
 import android.graphics.PathMeasure
-import android.media.MediaMetadataRetriever
-import android.util.Log
+import android.support.annotation.NonNull
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import com.example.sunday.p2pplayer.MainActivity
 import com.example.sunday.p2pplayer.R
 import java.util.*
@@ -25,6 +20,9 @@ import java.util.*
 private val BYTE_UNITS = arrayOf("b", "KB", "Mb", "Gb", "Tb")
 
 const val  MOVIE_URL = "movie_url"
+
+const val TIME_PREFERENCE = "time_preference"
+
 
 fun getBytesInHuman(size: Long): String {
     var i = 0
@@ -114,4 +112,13 @@ fun addDownloadAnimation(startView : View, endView : View,context : MainActivity
 //创建动画层
 private fun createAnimLayout(activity: MainActivity): ViewGroup {
     return activity.window.decorView as ViewGroup
+}
+
+//毫秒转为分钟字符串
+
+fun millToTime(@NonNull mill : Long) : String{
+    val second = (mill / 1000).toInt()
+    val minute = (second / 60).toString()
+    val newSecond = (second % 60).toString()
+    return minute + "分" + newSecond + "秒"
 }

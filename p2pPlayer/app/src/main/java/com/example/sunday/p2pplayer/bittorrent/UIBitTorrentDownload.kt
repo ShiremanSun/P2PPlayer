@@ -182,7 +182,7 @@ class UIBitTorrentDownload(private val dl: BTDownload) : BittorrentDownload {
     private inner class StatusListener : BTDownloadListener{
         override fun finished(dl: BTDownload) {
             //下载完成，应该添加到下载完成列表
-
+            //原来是用来判断是否要不要停止播种
         }
 
         override fun removed(dl: BTDownload, incompleteFiles: Set<File>) {

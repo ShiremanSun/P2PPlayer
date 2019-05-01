@@ -21,6 +21,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewStub
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -35,6 +36,8 @@ import com.example.sunday.p2pplayer.Util.PermissionUtil
 import com.example.sunday.p2pplayer.Util.addDownloadAnimation
 import com.example.sunday.p2pplayer.bittorrent.DownLoadManager
 import com.example.sunday.p2pplayer.model.MovieBean
+import com.example.sunday.p2pplayer.movieplay.ExoVideoPlayer
+import com.example.sunday.p2pplayer.movieplay.VVideoActivity
 import com.example.sunday.p2pplayer.movieplay.VideoActivity
 import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.gyf.immersionbar.ImmersionBar
@@ -51,6 +54,8 @@ class FragmentSearch : Fragment() {
 
     private lateinit var mViewModel : MyViewModel
 
+    private lateinit var mLoadingView : LinearLayout
+
     private val mList = ArrayList<MovieBean>()
 
     private lateinit var editText : EditText
@@ -60,6 +65,10 @@ class FragmentSearch : Fragment() {
         val view = inflater.inflate(R.layout.fragment_search, container, false)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val toolbar = view.findViewById<Toolbar>(R.id.toolBar)
+        val viewStub = view.findViewById<ViewStub>(R.id.viewStub)
+        viewStub.inflate()
+        mLoadingView = view.findViewById(R.id.LoadingView)
+
         (activity as MainActivity).setSupportActionBar(toolbar)
 
         ImmersionBar.setTitleBar(activity,toolbar)
@@ -73,6 +82,7 @@ class FragmentSearch : Fragment() {
            if (it != null) {
                mList.addAll(it)
            }
+            mLoadingView.visibility = View.GONE
            mAdapter.notifyDataSetChanged()
         })
        editText = view.findViewById(R.id.search_editText)
@@ -81,6 +91,7 @@ class FragmentSearch : Fragment() {
                 (editText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                         .hideSoftInputFromWindow(activity!!.currentFocus!!.windowToken
                                 , InputMethodManager.HIDE_NOT_ALWAYS)
+                mLoadingView.visibility = View.VISIBLE
                 mViewModel.search(editText.text.toString().trim())
                 return@OnEditorActionListener true
             }
@@ -155,7 +166,7 @@ class FragmentSearch : Fragment() {
                                 Manifest.permission.READ_EXTERNAL_STORAGE),
                         object : PermissionUtil.IPermissionListener {
                             override fun permissionDeny() {
-                                Toast.makeText(activity,"拒绝了权限，无法下载",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(activity,"拒绝了权限，无法播放",Toast.LENGTH_SHORT).show()
                             }
                             override fun permissionGranted() {
                                 val intent = Intent(activity, VideoActivity::class.java)

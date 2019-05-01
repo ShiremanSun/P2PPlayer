@@ -1,5 +1,6 @@
 package com.example.sunday.p2pplayer.movieplay
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -10,8 +11,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.sunday.p2pplayer.R
-import com.example.sunday.p2pplayer.Util.Config
-import com.example.sunday.p2pplayer.Util.MOVIE_URL
+import com.example.sunday.p2pplayer.Util.*
 import com.gyf.immersionbar.ImmersionBar
 import com.pili.pldroid.player.*
 import com.pili.pldroid.player.widget.PLVideoView
@@ -43,6 +43,9 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
     private val mLoadingView by lazy {
         findViewById<View>(R.id.LoadingView)
     }
+    private val datasource by lazy {
+        intent.getStringExtra(MOVIE_URL)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
@@ -68,7 +71,7 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
         // the unit of timeout is ms
         options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000)
        // 1 -> hw codec enable, 0 -> disable [recommended]
-        options.setInteger(AVOptions.KEY_MEDIACODEC, AVOptions.MEDIA_CODEC_HW_DECODE)
+        options.setInteger(AVOptions.KEY_MEDIACODEC, AVOptions.MEDIA_CODEC_AUTO)
 
         options.setString(AVOptions.KEY_CACHE_DIR, Config.DEFAULT_CACHE_DIR)
 
@@ -87,9 +90,8 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
         mVideoView.setOnErrorListener(mOnErrorListener)
         mVideoView.setOnVideoFrameListener(mOnVideoFrameListener)
         mVideoView.setOnAudioFrameListener(mOnAudioFrameListener)
-        val intent = intent
-        val url = intent.getStringExtra(MOVIE_URL)
-        mVideoView.setVideoPath(url)
+
+        mVideoView.setVideoPath(datasource)
 
         mVideoView.setOnPreparedListener({
             mVideoView.start()
@@ -103,7 +105,12 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
 
 
     override fun onDestroy() {
+        val sharedPreference = getSharedPreferences(TIME_PREFERENCE, Context.MODE_PRIVATE).edit()
+        sharedPreference.putString(datasource, millToTime(mVideoView.currentPosition))
+        sharedPreference.apply()
+        Log.d("VideoActivity",mVideoView.currentPosition.toString())
         mVideoView.stopPlayback()
+
         super.onDestroy()
     }
     override fun onCompletion() {

@@ -1,5 +1,6 @@
 package com.example.sunday.p2pplayer.downloading
 
+import android.app.AlertDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -9,7 +10,6 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +17,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.example.sunday.p2pplayer.R
 import com.example.sunday.p2pplayer.Util.getBytesInHuman
 import com.example.sunday.p2pplayer.bittorrent.BittorrentDownload
@@ -94,6 +95,20 @@ class FragmentDownloading : Fragment(){
                     else -> download.pause()
                 }
             })
+            p0.itemView.setOnLongClickListener {
+                val dialog = AlertDialog.Builder(context)
+                dialog.setMessage("是否要删除任务以及下载文件")
+                dialog.setPositiveButton("确定", {_, _ ->
+                    list[p1].remove(true)
+                    list.removeAt(p1)
+                    notifyItemChanged(p1)
+                })
+                dialog.setNegativeButton("取消", {_dialog, _ ->
+                    _dialog.cancel()
+                })
+                dialog.show()
+                return@setOnLongClickListener true
+            }
         }
 
         override fun getItemCount(): Int {
@@ -101,18 +116,15 @@ class FragmentDownloading : Fragment(){
         }
 
         inner class ViewHolder(v : View) : RecyclerView.ViewHolder(v) {
-            val curve = v.findViewById<ImageView>(R.id.view_transfer_list_item_download_type_indicator)!!
             val title = v.findViewById<TextView>(R.id.view_transfer_list_item_title)!!
             val progessBar = v.findViewById<ProgressBar>(R.id.view_transfer_list_item_progress)!!
             val status = v.findViewById<TextView>(R.id.view_transfer_list_item_status)!!
             private val peers = v.findViewById<TextView>(R.id.view_transfer_list_item_peers)!!
             val size = v.findViewById<TextView>(R.id.view_transfer_list_item_size)!!
             val downSpeed = v.findViewById<TextView>(R.id.view_transfer_list_item_speed)!!
-            val upSpeed = v.findViewById<TextView>(R.id.view_transfer_list_item_speed_upload)!!
             private val seeds = v.findViewById<TextView>(R.id.view_transfer_list_item_seeds)!!
             fun updateUI(position : Int) {
                 val download = list[position]
-                val rootView = itemView as LinearLayout
                 title.text = download.name
                 peers.text = String.format("节点 %s", formatPeers(download))
                 seeds.text = String.format("播种 %s", formatSeeds(download))
@@ -133,7 +145,6 @@ class FragmentDownloading : Fragment(){
                 }
                 status.text = downloadStatus
                 downSpeed.text = String.format("%s/s", getBytesInHuman(download.downloadSpeed))
-                upSpeed.text = String.format("%s/s", getBytesInHuman(download.uploadSpeed))
                 size.text = getBytesInHuman(download.size)
             }
         }
