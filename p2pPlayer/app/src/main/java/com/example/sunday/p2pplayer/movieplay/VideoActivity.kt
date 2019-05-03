@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.sunday.p2pplayer.R
 import com.example.sunday.p2pplayer.Util.*
@@ -22,11 +23,11 @@ import kotlin.experimental.and
 class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
         MediaController.OnShownListener, MediaController.OnHiddenListener{
     override fun onShown() {
-        mBackButton.visibility = View.VISIBLE
+        mTopView.visibility = View.VISIBLE
     }
 
     override fun onHidden() {
-        mBackButton.visibility = View.INVISIBLE
+        mTopView.visibility = View.INVISIBLE
     }
 
     private val errorView by lazy {
@@ -39,6 +40,7 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
         findViewById<ImageView>(R.id.Cover)
     }
 
+    private val mTopView by lazy { findViewById<LinearLayout>(R.id.top_view) }
     private val mBackButton by lazy { findViewById<ImageButton>(R.id.back) }
     private val mLoadingView by lazy {
         findViewById<View>(R.id.LoadingView)
@@ -46,6 +48,7 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
     private val datasource by lazy {
         intent.getStringExtra(MOVIE_URL)
     }
+    private val mMivieTitle by lazy { findViewById<TextView>(R.id.movie_title) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
@@ -63,7 +66,7 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
                     or View.SYSTEM_UI_FLAG_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         mVideoView = findViewById(R.id.videoView)
 
@@ -93,6 +96,7 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
 
         mVideoView.setVideoPath(datasource)
 
+        mMivieTitle.text = intent.getStringExtra(MOVIE_NAME)
         mVideoView.setOnPreparedListener({
             mVideoView.start()
         })

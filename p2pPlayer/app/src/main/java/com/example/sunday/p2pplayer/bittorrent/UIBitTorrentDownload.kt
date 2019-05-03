@@ -11,7 +11,7 @@ import java.util.*
 /**
 * Created by sunday on 19-4-25.
 */
-class UIBitTorrentDownload(private val dl: BTDownload) : BittorrentDownload {
+class UIBitTorrentDownload(public val dl: BTDownload) : BittorrentDownload {
     private var displayName : String
     private var size : Long
     private var list : List<TransferItem>
@@ -158,6 +158,8 @@ class UIBitTorrentDownload(private val dl: BTDownload) : BittorrentDownload {
     override fun getPredominantFileExtension(): String? {
         return dl.predominantFileExtension
     }
+
+
 
     private fun calculateSize(dl: BTDownload) : Long{
         var size = dl.size

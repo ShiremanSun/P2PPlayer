@@ -20,6 +20,8 @@ import java.util.*
 private val BYTE_UNITS = arrayOf("b", "KB", "Mb", "Gb", "Tb")
 
 const val  MOVIE_URL = "movie_url"
+const val MOVIE_NAME = "movie_name"
+const val INFOHASH = "infoHash"
 
 const val TIME_PREFERENCE = "time_preference"
 

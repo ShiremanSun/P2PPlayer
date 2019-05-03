@@ -49,4 +49,8 @@ object TransferManager{
         //初始化的时候，检查一遍种子文件，然后开启下载，引擎里会判断每个种子的下载状态
         BTEngine.restoreDownloads()
     }
+
+    fun getBitDownload(infoHash : String) : BittorrentDownload{
+        return bitTorrentDownloadMap[infoHash]!!
+    }
 }

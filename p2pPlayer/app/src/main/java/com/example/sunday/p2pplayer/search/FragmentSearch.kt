@@ -30,10 +30,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.sunday.p2pplayer.MainActivity
 import com.example.sunday.p2pplayer.R
-import com.example.sunday.p2pplayer.Util.HttpUtil
-import com.example.sunday.p2pplayer.Util.MOVIE_URL
-import com.example.sunday.p2pplayer.Util.PermissionUtil
-import com.example.sunday.p2pplayer.Util.addDownloadAnimation
+import com.example.sunday.p2pplayer.Util.*
 import com.example.sunday.p2pplayer.bittorrent.DownLoadManager
 import com.example.sunday.p2pplayer.model.MovieBean
 import com.example.sunday.p2pplayer.movieplay.ExoVideoPlayer
@@ -170,7 +167,9 @@ class FragmentSearch : Fragment() {
                             }
                             override fun permissionGranted() {
                                 val intent = Intent(activity, VideoActivity::class.java)
-                                intent.putExtra(MOVIE_URL, mList[p0.adapterPosition].dataSourcePath)
+                                val dataSourcePath = mList[p0.adapterPosition].dataSourcePath
+                                intent.putExtra(MOVIE_URL, dataSourcePath)
+                                intent.putExtra(MOVIE_NAME, dataSourcePath.substring(dataSourcePath.lastIndexOf('/')))
                                 activity?.startActivity(intent)
                             }
                         }, this@FragmentSearch)

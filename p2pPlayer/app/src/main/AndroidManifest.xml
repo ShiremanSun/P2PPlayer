@@ -33,17 +33,18 @@
         </activity>
         <activity
             android:name=".movieplay.VideoActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".movieplay.VVideoActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".movieplay.ExoVideoPlayer"></activity>
+        <activity android:name=".movieplay.ExoVideoPlayer" />
+        <activity android:name=".transferdetail.DetailActivity"></activity>
     </application>
 
 </manifest>

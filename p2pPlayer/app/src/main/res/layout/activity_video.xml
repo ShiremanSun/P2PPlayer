@@ -39,16 +39,34 @@
             android:textColor="@android:color/white"
             android:textSize="20sp" />
     </LinearLayout>
-    <ImageButton
-        android:id="@+id/back"
-        android:background="@null"
-        android:src="@drawable/back"
-        android:scaleType="fitCenter"
+    <LinearLayout
+        android:id="@+id/top_view"
         android:visibility="invisible"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_width="20dp"
-        android:layout_height="20dp" />
+        android:orientation="horizontal"
+        android:background="@color/halfTransparent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:id="@+id/back"
+            android:background="@null"
+            android:src="@drawable/back"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@null" />
+        <TextView
+            android:gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:textSize="15sp"
+            android:textColor="@color/colorWhite"
+            android:id="@+id/movie_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/error_view"
         android:visibility="gone"

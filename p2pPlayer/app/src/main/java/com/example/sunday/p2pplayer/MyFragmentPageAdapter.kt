@@ -10,26 +10,15 @@ import com.example.sunday.p2pplayer.search.FragmentSearch
 /**
  * Created by Sunday on 2019/4/15
  */
-class MyFragmentPageAdapter(fm:FragmentManager) : FragmentPagerAdapter(fm) {
+class MyFragmentPageAdapter(fm:FragmentManager, list: List<Fragment>) : FragmentPagerAdapter(fm) {
 
-    private val fragmentSearch = FragmentSearch()
-    private val fragmentDownloading = FragmentDownloading()
-    private val fragmentDownloaded = FragmentDownloaded()
-    init {
-        fragmentDownloading.bitDownloadListener = fragmentDownloaded
-    }
+    private val fragments = list
     override fun getItem(p0: Int): Fragment {
-        var fragment: Fragment? = null
-        when (p0) {
-            MainActivity.PAGE_ONE -> fragment = fragmentSearch
-            MainActivity.PAGE_TWO -> fragment = fragmentDownloading
-            MainActivity.PAGE_THREE -> fragment = fragmentDownloaded
-        }
-        return fragment!!
+       return fragments[p0]
     }
 
     override fun getCount(): Int {
-        return 3
+        return fragments.size
     }
 
 

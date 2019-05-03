@@ -6,7 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <style name="tab_menu_item">
@@ -19,10 +19,12 @@
         <item name="android:textColor">@drawable/tab_menu_text</item>
         <item name="android:textSize">12sp</item>
     </style>
-    <style name="TransfersList"></style>
+    <style name="TransfersList">
+
+    </style>
     <style name="TransfersList.Item">
         <item name="android:singleLine">true</item>
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">13sp</item>
         <item name="android:textColor">@color/text_gray</item>
     </style>
 </resources>

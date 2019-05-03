@@ -1,6 +1,7 @@
 package com.example.sunday.p2pplayer;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -8,10 +9,14 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
+import com.example.sunday.p2pplayer.downloaded.FragmentDownloaded;
+import com.example.sunday.p2pplayer.downloading.FragmentDownloading;
 import com.example.sunday.p2pplayer.model.MovieBean;
+import com.example.sunday.p2pplayer.search.FragmentSearch;
 import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -40,7 +45,12 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("MainActivity", "onCreate");
+       /* if (null instanceof MainActivity) {
+            Log.d("MainActivity", "onCreate");
+        }*/
+     Log.d("MainActivity", "onCreate");
+
+
 
         ImmersionBar.with(this).navigationBarColor(R.color.colorPrimary).init();
 
@@ -52,8 +62,17 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         mRadiaGroup.setOnCheckedChangeListener(this);
 
         mSearch.setChecked(true);
+        FragmentSearch search = new FragmentSearch();
+        FragmentDownloading downloading = new FragmentDownloading();
+        FragmentDownloaded downloaded = new FragmentDownloaded();
+        List<Fragment> list = new ArrayList<>();
+        list.add(search);
+        list.add(downloading);
+        list.add(downloaded);
 
-        MyFragmentPageAdapter fragmentPageAdapter = new MyFragmentPageAdapter(getSupportFragmentManager());
+        downloading.setBitDownloadListener(downloaded);
+
+        MyFragmentPageAdapter fragmentPageAdapter = new MyFragmentPageAdapter(getSupportFragmentManager(), list);
         mViewPager.setAdapter(fragmentPageAdapter);
         mViewPager.setCurrentItem(0);
 
@@ -132,8 +151,5 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     @Override
     public void onPageScrollStateChanged(int i) {
-
-
-
     }
 }

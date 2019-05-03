@@ -8,4 +8,5 @@
     <string name="buffering">正在缓冲……</string>
     <string name="loading">正在加载</string>
     <string name="error">出错了</string>
+    <string name="torrent_details">种子详情</string>
 </resources>

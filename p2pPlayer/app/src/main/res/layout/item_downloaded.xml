@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:layout_margin="5dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="3dp"
     android:layout_width="match_parent"
     android:layout_height="90dp">
     <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ImageView
@@ -18,27 +18,52 @@
             android:layout_height="70dp"
             />
         <LinearLayout
-            android:layout_marginStart="0dp"
             android:layout_marginTop="10dp"
             android:orientation="vertical"
             android:layout_marginBottom="10dp"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent">
-
             <TextView
                 android:id="@+id/movie_title"
                 android:layout_marginTop="5dp"
-                android:textSize="13sp"
+                style="@style/TransfersList.Item"
                 android:layout_width="match_parent"
-                android:layout_height="30dp" />
+                android:layout_height="wrap_content" />
             <TextView
                 android:id="@+id/movie_detail"
+                style="@style/TransfersList.Item"
                 android:layout_marginTop="5dp"
-                android:textSize="13sp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" />
+            <RelativeLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@id/upload_img"
+                    android:id="@+id/movie_size"
+                    style="@style/TransfersList.Item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/upload_img"
+                    android:src="@drawable/transfers_triangle_upward"
+                    android:tint="@color/text_gray"
+                    android:layout_toStartOf="@+id/upload_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@null" />
+                <TextView
+                    style="@style/TransfersList.Item"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/upload_speed"
+                    android:layout_marginEnd="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
         </LinearLayout>
-    </LinearLayout>
 
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>

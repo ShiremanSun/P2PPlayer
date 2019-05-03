@@ -18,8 +18,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.sunday.p2pplayer.R
+import com.example.sunday.p2pplayer.Util.MOVIE_NAME
 import com.example.sunday.p2pplayer.Util.MOVIE_URL
 import com.example.sunday.p2pplayer.Util.TIME_PREFERENCE
+import com.example.sunday.p2pplayer.Util.getBytesInHuman
 import com.example.sunday.p2pplayer.bittorrent.BittorrentDownload
 import com.example.sunday.p2pplayer.downloading.FragmentDownloading
 import com.example.sunday.p2pplayer.movieplay.VideoActivity
@@ -40,6 +42,7 @@ class FragmentDownloaded : Fragment(), FragmentDownloading.CompleteListener{
     private val mAdapter by lazy {
         MyAdapter()
     }
+
 
     private  var mLoadingView : LinearLayout? = null
 
@@ -67,18 +70,20 @@ class FragmentDownloaded : Fragment(), FragmentDownloading.CompleteListener{
 
         override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
             p0.title.text = completedDownloads[p1].name
+            p0.uploadSpeed.text = String.format("%s/s", getBytesInHuman(completedDownloads[p1].uploadSpeed))
             Glide.with(this@FragmentDownloaded).
                     load(completedDownloads[p1].contentSavePath.absolutePath).
                     placeholder(R.drawable.noimage).
                     transform(CenterCrop(), RoundedCorners(10)).
-                    //diskCacheStrategy(DiskCacheStrategy.RESOURCE).
                     into(p0.cur)
             //读取sharedPreference,判断已经观看的时间
             val time = context?.getSharedPreferences(TIME_PREFERENCE, Context.MODE_PRIVATE)?.
                     getString(completedDownloads[p1].contentSavePath.absolutePath, "0")
             p0.detail.text = String.format("上次观看到： %s", time)
+            p0.movieSize.text = String.format("文件大小：%s", getBytesInHuman(completedDownloads[p1].size))
             p0.itemView.setOnClickListener {
                 val intent = Intent(activity, VideoActivity::class.java)
+                intent.putExtra(MOVIE_NAME, completedDownloads[p1].displayName)
                 intent.putExtra(MOVIE_URL, completedDownloads[p1].contentSavePath.absolutePath)
                 activity?.startActivity(intent)
             }
@@ -86,11 +91,11 @@ class FragmentDownloaded : Fragment(), FragmentDownloading.CompleteListener{
                 val dialog = AlertDialog.Builder(context)
                 dialog.setMessage("是否要删除下载文件")
                 dialog.setPositiveButton("确定", { _, _ ->
-                    completedDownloads[p1].remove(true)
-                    completedDownloads.removeAt(p1)
                     val editor = context?.getSharedPreferences(TIME_PREFERENCE, Context.MODE_PRIVATE)?.edit()
                     editor?.remove(completedDownloads[p1].contentSavePath.absolutePath)
                     editor?.apply()
+                    completedDownloads[p1].remove(true)
+                    completedDownloads.removeAt(p1)
                     notifyItemChanged(p1)
                 })
                 dialog.setNegativeButton("取消", {_dialog, _ ->
@@ -115,6 +120,8 @@ class FragmentDownloaded : Fragment(), FragmentDownloading.CompleteListener{
             val cur = v.findViewById<ImageView>(R.id.movie_cav)!!
             val title = v.findViewById<TextView>(R.id.movie_title)!!
             val detail = v.findViewById<TextView>(R.id.movie_detail)!!
+            val uploadSpeed = v.findViewById<TextView>(R.id.upload_speed)!!
+            val movieSize = v.findViewById<TextView>(R.id.movie_size)!!
         }
     }
 

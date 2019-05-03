@@ -3,6 +3,7 @@ package com.example.sunday.p2pplayer.downloading
 import android.app.AlertDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,17 +14,16 @@ import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import com.bumptech.glide.Glide
 import com.example.sunday.p2pplayer.R
+import com.example.sunday.p2pplayer.Util.INFOHASH
 import com.example.sunday.p2pplayer.Util.getBytesInHuman
 import com.example.sunday.p2pplayer.bittorrent.BittorrentDownload
 import com.example.sunday.p2pplayer.transfer.Transfer
 import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.example.sunday.p2pplayer.transfer.TransferState
+import com.example.sunday.p2pplayer.transferdetail.DetailActivity
 import com.gyf.immersionbar.ImmersionBar
 import java.lang.ref.WeakReference
 import java.util.*
@@ -109,6 +109,12 @@ class FragmentDownloading : Fragment(){
                 dialog.show()
                 return@setOnLongClickListener true
             }
+
+            p0.detail.setOnClickListener {
+                val intent = Intent(activity, DetailActivity::class.java)
+                intent.putExtra(INFOHASH, list[p1].infoHash)
+                activity?.startActivity(intent)
+            }
         }
 
         override fun getItemCount(): Int {
@@ -122,7 +128,9 @@ class FragmentDownloading : Fragment(){
             private val peers = v.findViewById<TextView>(R.id.view_transfer_list_item_peers)!!
             val size = v.findViewById<TextView>(R.id.view_transfer_list_item_size)!!
             val downSpeed = v.findViewById<TextView>(R.id.view_transfer_list_item_speed)!!
+            val uploadSpeed = v.findViewById<TextView>(R.id.view_transfer_list_item_upspeed)!!
             private val seeds = v.findViewById<TextView>(R.id.view_transfer_list_item_seeds)!!
+            val detail = v.findViewById<ImageButton>(R.id.torrent_details_button)!!
             fun updateUI(position : Int) {
                 val download = list[position]
                 title.text = download.name
@@ -145,6 +153,7 @@ class FragmentDownloading : Fragment(){
                 }
                 status.text = downloadStatus
                 downSpeed.text = String.format("%s/s", getBytesInHuman(download.downloadSpeed))
+                uploadSpeed.text = String.format("%s/s", getBytesInHuman(download.uploadSpeed))
                 size.text = getBytesInHuman(download.size)
             }
         }
@@ -221,14 +230,7 @@ class FragmentDownloading : Fragment(){
 
     }
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
 
-        super.setUserVisibleHint(isVisibleToUser)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 
     interface CompleteListener{
         fun complete(bittorrentDownload: BittorrentDownload)
