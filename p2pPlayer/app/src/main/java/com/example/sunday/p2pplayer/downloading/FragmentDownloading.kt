@@ -101,7 +101,7 @@ class FragmentDownloading : Fragment(){
                 dialog.setPositiveButton("确定", {_, _ ->
                     list[p1].remove(true)
                     list.removeAt(p1)
-                    notifyItemChanged(p1)
+                    notifyDataSetChanged()
                 })
                 dialog.setNegativeButton("取消", {_dialog, _ ->
                     _dialog.cancel()

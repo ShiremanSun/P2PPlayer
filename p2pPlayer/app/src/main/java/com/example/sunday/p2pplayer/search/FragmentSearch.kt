@@ -169,7 +169,7 @@ class FragmentSearch : Fragment() {
                                 val intent = Intent(activity, VideoActivity::class.java)
                                 val dataSourcePath = mList[p0.adapterPosition].dataSourcePath
                                 intent.putExtra(MOVIE_URL, dataSourcePath)
-                                intent.putExtra(MOVIE_NAME, dataSourcePath.substring(dataSourcePath.lastIndexOf('/')))
+                                intent.putExtra(MOVIE_NAME, dataSourcePath.substring(dataSourcePath.lastIndexOf('/') + 1))
                                 activity?.startActivity(intent)
                             }
                         }, this@FragmentSearch)

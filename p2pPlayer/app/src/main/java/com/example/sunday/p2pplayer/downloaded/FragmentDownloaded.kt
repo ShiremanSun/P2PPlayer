@@ -96,7 +96,7 @@ class FragmentDownloaded : Fragment(), FragmentDownloading.CompleteListener{
                     editor?.apply()
                     completedDownloads[p1].remove(true)
                     completedDownloads.removeAt(p1)
-                    notifyItemChanged(p1)
+                    notifyDataSetChanged()
                 })
                 dialog.setNegativeButton("取消", {_dialog, _ ->
                     _dialog.cancel()
