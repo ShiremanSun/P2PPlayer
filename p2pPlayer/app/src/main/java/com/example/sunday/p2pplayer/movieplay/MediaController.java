@@ -317,10 +317,9 @@ public class MediaController extends FrameLayout implements IMediaController {
 
         if (hours > 0) {
             return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes,
-                    seconds).toString();
+                    seconds);
         } else {
-            return String.format(Locale.US, "%02d:%02d", minutes, seconds)
-                    .toString();
+            return String.format(Locale.US, "%02d:%02d", minutes, seconds);
         }
     }
 

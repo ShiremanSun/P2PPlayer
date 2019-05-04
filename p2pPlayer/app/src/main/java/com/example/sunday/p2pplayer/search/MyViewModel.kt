@@ -25,7 +25,7 @@ class MyViewModel : ViewModel() {
            liveData.value = ArrayList(0)
            return
        }
-       val url = "http://192.168.43.68:8080/BigFileUpload/search?movie_name="+string
+       val url = "http://188.131.249.47:8080/BigFileUpload/search?movie_name="+string
 
         Observable.create<List<MovieBean>> { emitter ->
            val response = HttpUtil.sendRequest(url)
