@@ -35,7 +35,7 @@ object BTEngine : SessionManager() {
             downloadLocation = file
             , onlyDownloadLargestFile = true
             , enableLogging = false
-            , shouldStream = true
+            , shouldStream = false
     )
     private val sessionParams = SessionParams(torrentSessionOptions.settingsPack)
     private var listener: BTEngineListener? = null
