@@ -5,6 +5,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+<title>uoloadmovie</title>
     <meta charset="utf-8"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -24,34 +25,42 @@
 
 </head>
 <body>
+<h1 align="center">妙蛙种子上传系统</h1>
+<ul class="nav nav-tabs">
+  <li role="presentation" class="active"><a href="#">上传</a></li>
+  <li role="presentation"><a href="movielist.jsp">查看</a></li>
+</ul>
 
+<div  align="center">
+<div colspan="2">
+<h2>添加新电影</h2>
+</div>
+<div style="display: inline-block;text-align:left">
 
-<a href = "">查看电影</a>
-
-<div class="container">
-
-  <div style="margin-top:50px">
-  	<textarea id="name" placeholder="请输入电影名称"></textarea>
+  <div class="input-group input-group-lg" style=margin-top:50px>
+  <input id = "name" type="text" class="form-control" placeholder="电影名称" aria-describedby="sizing-addon1">
+</div>
+  <div class="input-group input-group-lg" style=margin-top:50px>
+  	<textarea class="form-control" id="details"  style="width:300px;height:100px" placeholder="请输入电影描述"></textarea>
   </div>
-  <div style="margin-top:50px">
-  	<textarea id="details"  style="width:300px;height:100px" placeholder="请输入电影描述"></textarea>
-  </div>
-  <div class="row bottom-20px" >
+  <div class=" bottom-20px" >
   	<div >
   		<div id="thelist" class="uploader-list"></div>
   		<div id="picker">选择电影</div>
   	</div>
   	<div style="margin-top:30px">
-  		<div id="imagelist" class="uploader-list"></div>
+  		<div id="imagelist" class="uploader-list"  >
+  		</div>
   		<div id="filePicker">选择图片</div>
   	</div>
-  	
-  </div>
-   
-    <div class="row bottom-20px">
+  	<div class="bottom-20px">
         <button id="ctlBtn" class="btn btn-default">开始上传</button>
     </div>
 </div>
+  </div>
+</div>
+ 
+
 
 <%
   //创建数据库
@@ -187,8 +196,9 @@
  // 当有文件添加进来的时候
     uploader2.on( 'fileQueued', function( file ) {
         var $li = $(
-                '<div id="' + file.id + '" class="file-item thumbnail">' +
-                    '<img>' +
+                '<div id="' + file.id + '" class="file-item thumbnail" style="display:inline-block">' +
+                    '<img style="float: left">' +
+                    '<div style="clear: both"></div>'+
                     '<div class="info">' + file.name + '</div>' +
                 '</div>'
                 ),

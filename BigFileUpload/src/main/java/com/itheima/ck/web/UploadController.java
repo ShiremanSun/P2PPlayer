@@ -44,7 +44,6 @@ public class UploadController extends HttpServlet {
 	private Logger logger = LoggerFactory.getLogger(UploadController.class);
 
     private static String finalDirPath = "/var/www/html/datasource/";
-    private static final String FINAL_TORRENT_PATH_STRING = "/var/www/html/torrrent/";
     private static final String IPDATASOURCEADDRESS = "http://192.168.43.68/datasource/";
     private static final String IPTORRENTADDRESS = "http://192.168.43.68/torrent/";
     private String movieName;
@@ -199,7 +198,7 @@ public class UploadController extends HttpServlet {
                              for (int i = 0; i < fileBean.getChunks(); i++) {
                                  // 获取每个分片
                                  tempFileName = fileName + "_" + i + "_tmp";
-                                 System.out.println("文件名是"+tempFileName);
+                                 //System.out.println("文件名是"+tempFileName);
                                  Path itemPath = Paths.get(uploadDirPath, tempFileName);
                                  byte[] bytes = Files.readAllBytes(itemPath);
                                  Files.write(realFile, bytes, StandardOpenOption.APPEND);
@@ -222,8 +221,8 @@ public class UploadController extends HttpServlet {
              							e1.printStackTrace();
              						}						
              						
-             						//System.out.println("本机的IP地址是" + ipString);
-             						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+"192.168.43.68"+":6969/announce "+finalDirPath + fileBean.getName();	
+             						System.out.println("本机的IP地址是" + ipString);
+             						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+ipString+":6969/announce "+finalDirPath + fileBean.getName();	
              						String torrentPath = finalDirPath + fileName + ".torrent";
              						String moveTorrent = "mv " + torrentPath + " /var/www/html/torrent/";
              						String lnFileString = "ln " + finalDirPath + fileBean.getName() + " /var/www/html/torrent/";
@@ -243,9 +242,9 @@ public class UploadController extends HttpServlet {
              									MovieBean movie = new MovieBean();
              									movie.name = movieName;
              									movie.details = movieDetails;
-             									movie.datasourcePath = IPDATASOURCEADDRESS + fileBean.getName();
+             									movie.datasourcePath = "http://" +ipString +"/datasource/" + fileBean.getName();
                              					movie.imagePathString = "";
-                             					movie.torrentpathString = IPTORRENTADDRESS + fileName + ".torrent";
+                             					movie.torrentpathString = "http://" +ipString +"/torrent/" + fileName + ".torrent";
              									MovieDao.getInstance().addMovie(movie);
              								}else {
              									//更新表
@@ -253,8 +252,8 @@ public class UploadController extends HttpServlet {
              									String sqlString = "update movie set details=?,datasourcePath=?,torrentpathString=? where name=?";
              									PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
              									preparedStatement.setString(1, movieDetails);
-             									preparedStatement.setString(2,IPDATASOURCEADDRESS + fileBean.getName());
-             									preparedStatement.setString(3,IPTORRENTADDRESS + fileName + ".torrent");
+             									preparedStatement.setString(2,"http://" +ipString +"/datasource/" + fileBean.getName());
+             									preparedStatement.setString(3,"http://" +ipString +"/torrent/" + fileName + ".torrent");
              									preparedStatement.setString(4, movieName);
              									preparedStatement.executeUpdate();
              									preparedStatement.close();
@@ -318,7 +317,7 @@ public class UploadController extends HttpServlet {
         return null;
     }
     
-    private static InetAddress getLocalHostLANAddress() throws UnknownHostException {
+    public static InetAddress getLocalHostLANAddress() throws UnknownHostException {
         try {
             InetAddress candidateAddress = null;
             // 遍历所有的网络接口

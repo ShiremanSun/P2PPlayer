@@ -33,7 +33,7 @@
     <servlet-name>imageUploadServlet</servlet-name>
     <url-pattern>/imageUpload</url-pattern>
   </servlet-mapping>
-<servlet>
+  <servlet>
     <servlet-name>searchServlet</servlet-name>
     <servlet-class>com.itheima.ck.web.SearchServlet</servlet-class>
   </servlet>
@@ -41,7 +41,14 @@
     <servlet-name>searchServlet</servlet-name>
     <url-pattern>/search</url-pattern>
   </servlet-mapping>
-
+<servlet>
+    <servlet-name>findServlet</servlet-name>
+    <servlet-class>com.itheima.ck.web.FindServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>findServlet</servlet-name>
+    <url-pattern>/find</url-pattern>
+  </servlet-mapping>
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>

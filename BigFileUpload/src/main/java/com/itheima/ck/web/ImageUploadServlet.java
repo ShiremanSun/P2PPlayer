@@ -110,39 +110,51 @@ public class ImageUploadServlet extends HttpServlet {
             String dirString = finalDirPath + filenameString;
             Path path = Paths.get(dirString);
             byte[] fileData = FileUtils.readInputStream(bean.getFile(), 2048);
-            Files.write(path, fileData, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
-            
             try {
-				if (MovieDao.getInstance().getConnection() != null) {
-					//连接成功
-					
-					if (!MovieDao.getInstance().ifExsts(movieName)) {
-						//插入表
-						System.out.println("图片插入表");
-						MovieBean movieBean = new MovieBean();
-						movieBean.name = movieName;
-						movieBean.details = "";
-						movieBean.datasourcePath = "";
-						movieBean.imagePathString = ipAddressString+filenameString;
-						movieBean.torrentpathString = "";
-						MovieDao.getInstance().addMovie(movieBean);
+            	Files.write(path, fileData, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+            }catch (Exception e) {
+				e.printStackTrace();
+			}finally {
+				//不管图片存不存在都插入
+				try {
+					if (MovieDao.getInstance().getConnection() != null) {
+						//连接成功
+						String ipString ="";
+						try {
+							ipString = UploadController.getLocalHostLANAddress().getHostAddress();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
+						
+						if (!MovieDao.getInstance().ifExsts(movieName)) {
+							//插入表
+							System.out.println("图片插入表");
+							MovieBean movieBean = new MovieBean();
+							movieBean.name = movieName;
+							movieBean.details = "";
+							movieBean.datasourcePath = "";
+							movieBean.imagePathString = "http://" + ipString +"/images/"+filenameString;
+							movieBean.torrentpathString = "";
+							MovieDao.getInstance().addMovie(movieBean);
+						}else {
+							//更新表格
+							String sqlString = "update movie set imagePathString=? where name=?";
+							PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
+							preparedStatement.setString(1, "http://" + ipString +"/images/" + filenameString);
+							preparedStatement.setString(2, movieName);
+							preparedStatement.executeUpdate();
+							preparedStatement.close();
+						}
+						
 					}else {
-						//更新表格
-						String sqlString = "update movie set imagePathString=? where name=?";
-						PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
-						preparedStatement.setString(1, ipAddressString + filenameString);
-						preparedStatement.setString(2, movieName);
-						preparedStatement.executeUpdate();
-						preparedStatement.close();
+						System.out.println("连接失败");
 					}
 					
-				}else {
-					System.out.println("连接失败");
+				} catch (SQLException e) {
+					// TODO: handle exception
+					e.printStackTrace();
 				}
-				
-			} catch (SQLException e) {
-				// TODO: handle exception
-				e.printStackTrace();
 			}
             //插入数据库
            

@@ -21,7 +21,7 @@ public class FileUploadBean {
     private String name;
     private String type;
     private Date lastModifiedDate;
-    private int size;
+    private long size;
     private int chunks; //分卷总数
     private int chunk; //分卷 0开始
     private InputStream file;
@@ -56,7 +56,7 @@ public class FileUploadBean {
                     }
                     break;
                 case "size" :
-                    size = Integer.parseInt(fileItem.getString());
+                    size = Long.parseLong(fileItem.getString());
                     break;
                 case "chunks" :
                     chunks = Integer.parseInt(fileItem.getString());
@@ -110,7 +110,7 @@ public class FileUploadBean {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 

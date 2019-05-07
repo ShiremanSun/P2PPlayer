@@ -59,6 +59,28 @@ public class MovieDao {
 		ResultSet resultSet = statement.executeQuery();
 		return resultSet.next();
 	}
+	//查询所有电影
+	public List<MovieBean> queryAll() {
+		List<MovieBean> list = new ArrayList<MovieBean>();
+		String search = "select * from movie";
+		try {
+			PreparedStatement statement = getConnection().prepareStatement(search);
+			ResultSet resultSet = statement.executeQuery();
+			while(resultSet.next()) {
+				MovieBean movieBean = new MovieBean();
+				movieBean.name = resultSet.getString("name");
+				movieBean.details = resultSet.getString("details");
+				movieBean.datasourcePath = resultSet.getString("datasourcePath");
+				movieBean.imagePathString = resultSet.getString("imagePathString");
+				movieBean.torrentpathString = resultSet.getString("torrentpathString");
+				list.add(movieBean);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+		
+	}
 	
 	//查询电影,按匹配度
 	public List<MovieBean> query(String name) throws SQLException{
@@ -76,7 +98,6 @@ public class MovieDao {
 			movieBean.datasourcePath = resultSet.getString("datasourcePath");
 			movieBean.imagePathString = resultSet.getString("imagePathString");
 			movieBean.torrentpathString = resultSet.getString("torrentpathString");
-			System.out.println(movieBean.name);
 			list.add(movieBean);
 			
 		}

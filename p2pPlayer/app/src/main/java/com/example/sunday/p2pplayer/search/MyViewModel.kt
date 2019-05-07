@@ -3,7 +3,9 @@ package com.example.sunday.p2pplayer.search
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.content.Context
 import android.text.TextUtils
+import com.example.sunday.p2pplayer.R
 import com.example.sunday.p2pplayer.Util.HttpUtil
 import com.example.sunday.p2pplayer.model.MovieBean
 import com.google.gson.Gson
@@ -25,7 +27,7 @@ class MyViewModel : ViewModel() {
            liveData.value = ArrayList(0)
            return
        }
-       val url = "http://192.168.43.68:8080/BigFileUpload/search?movie_name="+string
+       val url = "http://192.168.0.5:8080/BigFileUpload/search?movie_name="+string
 
         Observable.create<List<MovieBean>> { emitter ->
            val response = HttpUtil.sendRequest(url)
