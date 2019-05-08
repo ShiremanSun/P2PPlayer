@@ -25,6 +25,8 @@ const val INFOHASH = "infoHash"
 
 const val TIME_PREFERENCE = "time_preference"
 
+const val SERVER_IP = "server_ip"
+
 
 fun getBytesInHuman(size: Long): String {
     var i = 0

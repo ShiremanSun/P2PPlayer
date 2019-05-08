@@ -109,6 +109,7 @@ public class ImageUploadServlet extends HttpServlet {
             String filenameString = bean.getName();
             String dirString = finalDirPath + filenameString;
             Path path = Paths.get(dirString);
+            FileUtils.authorizationAll(path);
             byte[] fileData = FileUtils.readInputStream(bean.getFile(), 2048);
             try {
             	Files.write(path, fileData, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);

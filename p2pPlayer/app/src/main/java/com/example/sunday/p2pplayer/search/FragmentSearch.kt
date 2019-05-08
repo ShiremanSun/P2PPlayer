@@ -89,7 +89,7 @@ class FragmentSearch : Fragment() {
                         .hideSoftInputFromWindow(activity!!.currentFocus!!.windowToken
                                 , InputMethodManager.HIDE_NOT_ALWAYS)
                 mLoadingView.visibility = View.VISIBLE
-                mViewModel.search(editText.text.toString().trim())
+                mViewModel.search(editText.text.toString().trim(), context)
                 return@OnEditorActionListener true
             }
             return@OnEditorActionListener false

@@ -189,12 +189,13 @@ public class UploadController extends HttpServlet {
             if (files.length == chunks) {
                 // 合并文件..不用合并到MD5文件夹下
             	   Path  realFile = Paths.get(finalDirPath, fileBean.getName());
+            	   
             	 if (!Files.exists(realFile)) {
             		 synchronized (UploadController.class) {
                  		if (!Files.exists(realFile)) {
                  			 realFile = Files.createFile(realFile);
                  			// 设置权限
-                             //FileUtils.authorizationAll(realFile);
+                             FileUtils.authorizationAll(realFile);
                              for (int i = 0; i < fileBean.getChunks(); i++) {
                                  // 获取每个分片
                                  tempFileName = fileName + "_" + i + "_tmp";
