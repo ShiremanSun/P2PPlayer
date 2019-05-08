@@ -136,14 +136,14 @@ public class ImageUploadServlet extends HttpServlet {
 							movieBean.name = movieName;
 							movieBean.details = "";
 							movieBean.datasourcePath = "";
-							movieBean.imagePathString = "http://" + "188.131.249.47" +"/images/"+filenameString;
+							movieBean.imagePathString = "http://" + ipString +"/images/"+filenameString;
 							movieBean.torrentpathString = "";
 							MovieDao.getInstance().addMovie(movieBean);
 						}else {
 							//更新表格
 							String sqlString = "update movie set imagePathString=? where name=?";
 							PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
-							preparedStatement.setString(1, "http://" + "188.131.249.47" +"/images/" + filenameString);
+							preparedStatement.setString(1, "http://" + ipString +"/images/" + filenameString);
 							preparedStatement.setString(2, movieName);
 							preparedStatement.executeUpdate();
 							preparedStatement.close();
