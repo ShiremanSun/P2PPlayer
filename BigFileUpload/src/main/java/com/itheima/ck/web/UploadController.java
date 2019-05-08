@@ -223,7 +223,7 @@ public class UploadController extends HttpServlet {
              						}						
              						
              						System.out.println("本机的IP地址是" + ipString);
-             						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+ipString+":6969/announce "+finalDirPath + fileBean.getName();	
+             						String makeTorrentString = "/usr/local/bin/btmaketorrent.py "+"http://"+"188.131.249.47"+":6969/announce "+finalDirPath + fileBean.getName();	
              						String torrentPath = finalDirPath + fileName + ".torrent";
              						String moveTorrent = "mv " + torrentPath + " /var/www/html/torrent/";
              						String lnFileString = "ln " + finalDirPath + fileBean.getName() + " /var/www/html/torrent/";
@@ -231,6 +231,8 @@ public class UploadController extends HttpServlet {
              						UploadController.this.executeLinuxCmd(makeTorrentString);
              						executeLinuxCmd(moveTorrent);
              						executeLinuxCmd(lnFileString);
+             						Path path = Paths.get("/var/www/html/torrent/"+fileName+ ".torrent");
+             						FileUtils.authorizationAll(path);
              						
              						
              						//在这插入数据库
@@ -243,9 +245,9 @@ public class UploadController extends HttpServlet {
              									MovieBean movie = new MovieBean();
              									movie.name = movieName;
              									movie.details = movieDetails;
-             									movie.datasourcePath = "http://" +ipString +"/datasource/" + fileBean.getName();
+             									movie.datasourcePath = "http://" +"188.131.249.47" +"/datasource/" + fileBean.getName();
                              					movie.imagePathString = "";
-                             					movie.torrentpathString = "http://" +ipString +"/torrent/" + fileName + ".torrent";
+                             					movie.torrentpathString = "http://" +"188.131.249.47" +"/torrent/" + fileName + ".torrent";
              									MovieDao.getInstance().addMovie(movie);
              								}else {
              									//更新表
@@ -253,8 +255,8 @@ public class UploadController extends HttpServlet {
              									String sqlString = "update movie set details=?,datasourcePath=?,torrentpathString=? where name=?";
              									PreparedStatement preparedStatement = MovieDao.getInstance().getConnection().prepareStatement(sqlString);
              									preparedStatement.setString(1, movieDetails);
-             									preparedStatement.setString(2,"http://" +ipString +"/datasource/" + fileBean.getName());
-             									preparedStatement.setString(3,"http://" +ipString +"/torrent/" + fileName + ".torrent");
+             									preparedStatement.setString(2,"http://" +"188.131.249.47" +"/datasource/" + fileBean.getName());
+             									preparedStatement.setString(3,"http://" +"188.131.249.47" +"/torrent/" + fileName + ".torrent");
              									preparedStatement.setString(4, movieName);
              									preparedStatement.executeUpdate();
              									preparedStatement.close();

@@ -106,6 +106,7 @@ public class FileUtils {
      * @param path 需要权限的路径
      */
     public static void authorizationAll(Path path) {
+    	System.out.print("设置权限");
         Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_READ);
         perms.add(PosixFilePermission.OWNER_WRITE);
@@ -113,10 +114,13 @@ public class FileUtils {
         perms.add(PosixFilePermission.GROUP_READ);
         perms.add(PosixFilePermission.GROUP_WRITE);
         perms.add(PosixFilePermission.GROUP_EXECUTE);
+        perms.add(PosixFilePermission.OTHERS_READ);
+        perms.add(PosixFilePermission.OTHERS_WRITE);
+        perms.add(PosixFilePermission.OTHERS_EXECUTE);
         try {
             Files.setPosixFilePermissions(path, perms);
         } catch (Exception e) {
-            logger.info("Change folder " + path + " permission failed.");
+            e.printStackTrace();
         }
     }
 

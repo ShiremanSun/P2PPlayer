@@ -59,7 +59,7 @@ class MyViewModel : ViewModel() {
 
 
 
-       val url = "http://"+preference?.getString(SERVER_IP,"188.131.249.47")+"/BigFileUpload/search?movie_name="+string
+       val url = "http://"+preference?.getString(SERVER_IP,"188.131.249.47:8080")+"/BigFileUpload/search?movie_name="+string
 
         Observable.create<List<MovieBean>> { emitter ->
            val response = HttpUtil.sendRequest(url)
