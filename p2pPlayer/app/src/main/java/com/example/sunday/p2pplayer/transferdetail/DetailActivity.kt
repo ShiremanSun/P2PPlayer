@@ -119,16 +119,16 @@ class DetailActivity : AppCompatActivity() {
            peersList.addAll(list)
        }
        override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
-           val peer = peersList[p1].swig()
+
            val peerInfo = peersList[p1]
-           p0.address.text = TcpEndpoint(peer.ip).toString()
-          if (String(peerInfo.client()).isEmpty()) {
+           p0.address.text = peerInfo.ip()
+          if (peerInfo.client().isEmpty()) {
               p0.client.text = "未知"
           } else {
-              p0.client.text = String(peerInfo.client())
+              p0.client.text = peerInfo.client()
           }
-           p0.downSpeed.text = getBytesInHuman(peer.down_speed.toLong())
-           p0.upSpeed.text = getBytesInHuman(peer.up_speed.toLong())
+           p0.downSpeed.text = getBytesInHuman(peerInfo.downSpeed().toLong())
+           p0.upSpeed.text = getBytesInHuman(peerInfo.upSpeed().toLong())
            p0.downlodedSize.text = String.format("已下载%s", getBytesInHuman(peerInfo.totalDownload()))
            p0.uploadedSize.text = String.format("已上传%s", getBytesInHuman(peerInfo.totalUpload()))
         }
