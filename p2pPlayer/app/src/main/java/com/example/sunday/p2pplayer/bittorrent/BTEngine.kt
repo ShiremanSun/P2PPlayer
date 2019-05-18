@@ -22,12 +22,12 @@ object BTEngine : SessionManager() {
 
     private const val TAG = "BTEngine"
 
-    private val TORRENT_ORIG_PATH_KEY = "torrent_orig_path"
+    private const val TORRENT_ORIG_PATH_KEY = "torrent_orig_path"
     private val innerListener: InnerListener = InnerListener()
 
     private val path = Environment.getExternalStorageDirectory().toString() + "/movies"
     private val file = File(path)
-    private val torrentPath = path + "/torrents"
+    private val torrentPath = "$path/torrents"
     private val torrentFiles = File(torrentPath)
 
     private val restoreDownloadsQueue  = LinkedList<RestoreDownloadTask>()
@@ -55,11 +55,11 @@ object BTEngine : SessionManager() {
     }
 
      fun resumeDataFile(infoHash: String): File {
-        return File(torrentSessionOptions.downloadLocation, infoHash + ".resume")
+        return File(torrentSessionOptions.downloadLocation, "$infoHash.resume")
     }
 
      fun resumeTorrentFile(infoHash: String): File {
-        return File(torrentFiles, infoHash + ".torrent")
+        return File(torrentFiles, "$infoHash.torrent")
     }
 
 
@@ -106,7 +106,7 @@ object BTEngine : SessionManager() {
 
     }
     private fun torrentFile(name: String): File {
-        return File(torrentFiles, name + ".torrent")
+        return File(torrentFiles, "$name.torrent")
     }
     private fun getEscapedFilename(ti: TorrentInfo): String {
         var name: String? = ti.name()

@@ -2,6 +2,9 @@ package com.example.sunday.p2pplayer.transfer
 
 import android.net.Uri
 import com.example.sunday.p2pplayer.bittorrent.*
+import com.frostwire.jlibtorrent.TorrentInfo
+import org.apache.commons.io.FileUtils
+import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -18,10 +21,19 @@ object TransferManager{
         loadTorrentTask()
     }
 
-    fun downloadTorrent(url : String, displayName : String) : BittorrentDownload? {
-        val u = Uri.parse(url)
-         return TorrentFetcherDownload(TorrentUrlInfo(u.toString(), displayName))
+    fun downloadTorrent(uri: Uri , displayName : String) : BittorrentDownload? {
 
+        var download: BittorrentDownload? = null
+        if ("file" == uri.scheme) {
+            val data = FileUtils.readFileToByteArray(File(uri.path))
+            val ti = TorrentInfo.bdecode(data)
+            BTEngine.downloadFile(ti, null)
+            return download
+        }
+
+        download = TorrentFetcherDownload(TorrentUrlInfo(uri.toString(), displayName))
+
+        return download
     }
 
 

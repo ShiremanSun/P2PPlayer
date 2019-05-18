@@ -1,7 +1,15 @@
 package com.example.sunday.p2pplayer;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,12 +17,17 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
+import com.example.sunday.p2pplayer.Util.PermissionUtil;
+import com.example.sunday.p2pplayer.Util.UtilKt;
+import com.example.sunday.p2pplayer.bittorrent.DownLoadManager;
 import com.example.sunday.p2pplayer.downloaded.FragmentDownloaded;
 import com.example.sunday.p2pplayer.downloading.FragmentDownloading;
 import com.example.sunday.p2pplayer.model.MovieBean;
 import com.example.sunday.p2pplayer.search.FragmentSearch;
 import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
+import com.vincent.filepicker.Constant;
+import com.vincent.filepicker.filter.entity.NormalFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +37,8 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import io.vov.vitamio.Vitamio;
 
-@Route(path = "showmovie/mainactivity")
+
 public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, ViewPager.OnPageChangeListener{
 
     public static final int PAGE_ONE = 0;
@@ -45,15 +57,15 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       /* if (null instanceof MainActivity) {
-            Log.d("MainActivity", "onCreate");
-        }*/
-     Log.d("MainActivity", "onCreate");
-
 
 
         ImmersionBar.with(this).navigationBarColor(R.color.colorPrimary).init();
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        }
         RadioGroup mRadiaGroup = findViewById(R.id.tab_bar);
         mSearch = findViewById(R.id.tab_search);
         mDownloading = findViewById(R.id.tab_downloading);
@@ -78,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
         mViewPager.addOnPageChangeListener(this);
 
+        downloadFile(getIntent());
     }
 
 
@@ -103,32 +116,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     @Override
     public void onPageScrolled(int i, float v, int i1) {
 
-         Observable.create(emitter -> {
-
-        }).subscribeOn(Schedulers.io())
-                 .observeOn(AndroidSchedulers.mainThread())
-                 .subscribe(new Observer<Object>() {
-                     @Override
-                     public void onSubscribe(Disposable d) {
-
-                     }
-
-                     @Override
-                     public void onNext(Object o) {
-
-                     }
-
-                     @Override
-                     public void onError(Throwable e) {
-
-                     }
-
-                     @Override
-                     public void onComplete() {
-
-                     }
-                 });
-        new TypeToken<List<MovieBean>>(){}.getType();
     }
 
     @Override
@@ -151,5 +138,46 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     @Override
     public void onPageScrollStateChanged(int i) {
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+
+        downloadFile(intent);
+        super.onNewIntent(intent);
+    }
+
+    private void downloadFile(Intent intent) {
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            //拿到数据
+           Uri uri = intent.getData();
+           if (uri != null) {
+               //将Content换成file
+               Uri newUri = UtilKt.getFilePath(this, uri);
+               if (newUri != null) {
+                   DownLoadManager.INSTANCE.downloadTorrent(newUri, "");
+               }
+           }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode) {
+            case Constant.REQUEST_CODE_PICK_FILE:
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        ArrayList<NormalFile> files = data.getParcelableArrayListExtra(Constant.RESULT_PICK_FILE);
+                        for (NormalFile file : files) {
+                            Uri uri = Uri.parse(String.format("file://%s", file.getPath()));
+                            if (uri != null) {
+                                DownLoadManager.INSTANCE.downloadTorrent(uri, "");
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

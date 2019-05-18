@@ -5,9 +5,8 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
@@ -17,7 +16,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,14 +28,18 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.sunday.p2pplayer.MainActivity
 import com.example.sunday.p2pplayer.R
-import com.example.sunday.p2pplayer.Util.*
+import com.example.sunday.p2pplayer.Util.MOVIE_NAME
+import com.example.sunday.p2pplayer.Util.MOVIE_URL
+import com.example.sunday.p2pplayer.Util.PermissionUtil
+import com.example.sunday.p2pplayer.Util.addDownloadAnimation
 import com.example.sunday.p2pplayer.bittorrent.DownLoadManager
 import com.example.sunday.p2pplayer.model.MovieBean
-import com.example.sunday.p2pplayer.movieplay.ExoVideoPlayer
-import com.example.sunday.p2pplayer.movieplay.VVideoActivity
 import com.example.sunday.p2pplayer.movieplay.VideoActivity
 import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.gyf.immersionbar.ImmersionBar
+import com.vincent.filepicker.Constant
+import com.vincent.filepicker.activity.NormalFilePickActivity
+import kotlinx.android.synthetic.main.fragment_search.*
 import java.util.*
 import java.util.regex.Pattern
 
@@ -80,7 +82,10 @@ class FragmentSearch : Fragment() {
                mList.addAll(it)
            }
             mLoadingView.visibility = View.GONE
-           mAdapter.notifyDataSetChanged()
+            mAdapter.notifyDataSetChanged()
+            if(mList.isEmpty()) {
+                Toast.makeText(activity, "无结果",Toast.LENGTH_SHORT).show()
+            }
         })
        editText = view.findViewById(R.id.search_editText)
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
@@ -97,7 +102,16 @@ class FragmentSearch : Fragment() {
         return view
     }
 
-
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        open.setOnClickListener {
+            //打开文件选择器
+            val intent = Intent(activity, NormalFilePickActivity::class.java)
+            intent.putExtra(Constant.MAX_NUMBER, 1)
+            intent.putExtra(NormalFilePickActivity.SUFFIX, arrayOf("torrent"))
+            activity?.startActivityForResult(intent, Constant.REQUEST_CODE_PICK_FILE)
+        }
+    }
    inner class SearchAdapter : RecyclerView.Adapter<SearchAdapter.ViewHolder>(){
 
 
@@ -131,14 +145,15 @@ class FragmentSearch : Fragment() {
             }
             p0.movieDetails.text = mList[p1].details
             p0.movieName.text = spannable
-            p0.downloadButton.setOnClickListener({
+            p0.downloadButton.setOnClickListener {
                 PermissionUtil.requestPermission(activity!!,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE),
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE),
                         object : PermissionUtil.IPermissionListener {
                             override fun permissionDeny() {
                                 Toast.makeText(activity,"拒绝了权限，无法下载",Toast.LENGTH_SHORT).show()
                             }
+
                             override fun permissionGranted() {
                                 TransferManager.bitTorrentDownloads.forEach {
                                     val dataSourcePath = mList[p0.adapterPosition].dataSourcePath;
@@ -150,14 +165,14 @@ class FragmentSearch : Fragment() {
                                 }
                                 //添加下载的动画
                                 addDownloadAnimation(p0.downloadButton,
-                                            (activity as MainActivity).mDownloading,
-                                            activity as MainActivity)
-                                DownLoadManager.downloadTorrent(mList[p0.adapterPosition].torrentPathString, mList[p0.adapterPosition].name)
+                                        (activity as MainActivity).mDownloading,
+                                        activity as MainActivity)
+                                DownLoadManager.downloadTorrent(Uri.parse(mList[p0.adapterPosition].torrentPathString), mList[p0.adapterPosition].name)
                             }
                         }, this@FragmentSearch)
-            })
+            }
 
-            p0.playButton.setOnClickListener({
+            p0.playButton.setOnClickListener {
                 PermissionUtil.requestPermission(activity!!,
                         arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                 Manifest.permission.READ_EXTERNAL_STORAGE),
@@ -165,6 +180,7 @@ class FragmentSearch : Fragment() {
                             override fun permissionDeny() {
                                 Toast.makeText(activity,"拒绝了权限，无法播放",Toast.LENGTH_SHORT).show()
                             }
+
                             override fun permissionGranted() {
                                 val intent = Intent(activity, VideoActivity::class.java)
                                 val dataSourcePath = mList[p0.adapterPosition].dataSourcePath
@@ -173,7 +189,7 @@ class FragmentSearch : Fragment() {
                                 activity?.startActivity(intent)
                             }
                         }, this@FragmentSearch)
-            })
+            }
         }
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

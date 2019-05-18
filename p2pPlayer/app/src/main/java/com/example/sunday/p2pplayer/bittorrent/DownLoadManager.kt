@@ -1,6 +1,7 @@
 package com.example.sunday.p2pplayer.bittorrent
 
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Environment
 import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.masterwok.simpletorrentandroid.TorrentSessionOptions
@@ -22,17 +23,14 @@ object DownLoadManager  {
 
 
 
-    fun downloadTorrent(url : String, displayName:String) {
+    fun downloadTorrent(uri : Uri, displayName:String) {
         val runnable= Runnable {
-            TransferManager.downloadTorrent(url, displayName)
+            TransferManager.downloadTorrent(uri, displayName)
         }
         DownLoadManager.threadPool.execute(runnable)
-
     }
 
-    private fun onPreferenceChanged( key:String) {
 
-    }
 
 
     //下载任务

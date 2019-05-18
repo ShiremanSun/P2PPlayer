@@ -8,23 +8,36 @@
         android:background="@color/text_gray"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize">
-        <EditText
-            android:id="@+id/search_editText"
+        <LinearLayout
             android:layout_margin="10dp"
-            android:hint="搜索"
-            android:padding="10dp"
-            android:cursorVisible="false"
-            android:imeOptions="actionSearch"
-            android:inputType="textAutoComplete"
-            android:singleLine="true"
-            android:textColor="@color/colorBarText"
-            android:textColorHint="@color/colorBarText"
-            android:textSize="13sp"
+            android:padding="5dp"
+            android:orientation="horizontal"
             android:background="@drawable/searchedittext_background"
-            android:drawableStart="@drawable/seek"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="match_parent">
+            <EditText
+                android:id="@+id/search_editText"
+                android:hint="搜索"
+                android:cursorVisible="false"
+                android:imeOptions="actionSearch"
+                android:inputType="textAutoComplete"
+                android:singleLine="true"
+                android:textColor="@color/colorBarText"
+                android:textColorHint="@color/colorBarText"
+                android:textSize="13sp"
+                android:background="@null"
+                android:drawableStart="@drawable/seek"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                />
+            <ImageView
+                android:id="@+id/open"
+                android:src="@drawable/plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
     </android.support.v7.widget.Toolbar>
     <FrameLayout
         android:layout_width="match_parent"

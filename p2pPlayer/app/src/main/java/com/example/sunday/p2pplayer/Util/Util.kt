@@ -2,16 +2,21 @@ package com.example.sunday.p2pplayer.Util
 
 import android.animation.Animator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.graphics.Path
 import android.graphics.PathMeasure
+import android.net.Uri
 import android.support.annotation.NonNull
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.LinearLayout
+import com.alibaba.android.arouter.utils.TextUtils
 import com.example.sunday.p2pplayer.MainActivity
 import com.example.sunday.p2pplayer.R
+import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 
 /**
@@ -125,4 +130,37 @@ fun millToTime(@NonNull mill : Long) : String{
     val minute = (second / 60).toString()
     val newSecond = (second % 60).toString()
     return minute + "分" + newSecond + "秒"
+}
+
+
+//从content路径里获取真正的文件路径
+fun getFilePath(context: Context, uri: Uri) : Uri?{
+    val rootDataDir = context.filesDir
+    val fileName = getFileName(uri)
+    if (!TextUtils.isEmpty(fileName)) {
+        val target = File(rootDataDir.absolutePath + File.separator + fileName)
+        val inStream = context.contentResolver.openInputStream(uri)
+        val outStream = FileOutputStream(target)
+        val buffer = ByteArray(16384)
+
+        if (inStream != null) {
+            var bytesRead = inStream.read(buffer)
+            while (bytesRead != -1) {
+                outStream.write(buffer, 0, bytesRead)
+                bytesRead = inStream.read(buffer)
+            }
+        }
+        return Uri.parse("file://${target.absolutePath}")
+    }
+    return null
+}
+
+fun getFileName(uri: Uri) : String? {
+    val path = uri.path
+    var fileName : String? = null
+    val cut = path?.lastIndexOf('/')
+    if (cut != -1) {
+        fileName = path?.substring(cut?.plus(1)!!)
+    }
+    return fileName
 }

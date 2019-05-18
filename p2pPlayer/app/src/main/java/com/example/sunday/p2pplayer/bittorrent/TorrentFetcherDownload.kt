@@ -1,6 +1,8 @@
 package com.example.sunday.p2pplayer.bittorrent
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import android.os.Build
 import android.util.Log
 import com.example.sunday.p2pplayer.Util.HttpUtil
 import com.example.sunday.p2pplayer.transfer.TransferItem
@@ -8,6 +10,7 @@ import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.example.sunday.p2pplayer.transfer.TransferState
 import com.frostwire.jlibtorrent.TorrentInfo
 import java.io.File
+import java.net.URI
 import java.util.*
 
 /**
@@ -174,6 +177,7 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
                 state = TransferState.ERROR
             }
         } catch (e: Throwable) {
+            e.printStackTrace()
             state = TransferState.ERROR
         }
 
@@ -181,7 +185,7 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     init {
         this.state = TransferState.DOWNLOADING_TORRENT
         TransferManager.bitTorrentDownloads.add(this)
-        TransferManager.bitTorrentDownloadMap.put(infoHash, this)
+        TransferManager.bitTorrentDownloadMap[infoHash] = this
         startDownload()
     }
 }
