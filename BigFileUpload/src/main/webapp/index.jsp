@@ -25,12 +25,64 @@
 
 </head>
 <body>
+<% Cookie[] cookies = request.getCookies();
+
+		String user = "";
+
+		if (cookies != null) {
+
+			for(int i=0;i<cookies.length;i++){
+
+				if(cookies[i].getName().equals("userName")){
+					user=cookies[i].getValue();
+				}
+			}
+
+		}
+%>
 <h1 align="center">妙蛙种子上传系统</h1>
 <ul class="nav nav-tabs">
-  <li role="presentation" class="active"><a href="#">上传</a></li>
-  <li role="presentation"><a href="movielist.jsp">查看</a></li>
+  <li role="presentation" class="active" style="font-size:20px;"><a href="#">上传</a></li>
+  <li role="presentation" style="font-size:20px;"><a href="movielist.jsp">查看</a></li>
+  <li id="fat_menu" class="dropdown navbar-right" style="margin-right:50px;font-size:20px;">
+  <a id="drop" href="#" class="dropdown-toggle" data-toggle="dropdown"
+  role="button" aria-haspopup="true" aria-expanded="false">
+  	<font style="vertical-align:inherit;">
+  		<font style="vertical-align:inherit;">
+  		<%=user%>
+  	</font>
+  	</font>
+  	<span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" aria-labellebdy="drop">
+  	<li style=font-size:20px>
+  		<a href="javascript:deleteCookie('userName')">
+  			退出登录
+  		</a>
+  	</li>
+  </ul>
+  </li>
+ 
 </ul>
-
+<script type="text/javascript">
+	function deleteCookie(key) {
+		var date = new Date();
+		var delValue = getCookie(key);
+		date.setTime(date.getTime() - 1);
+        if (!!delValue) {
+            document.cookie = key+'='+delValue+';expires='+date.toGMTString();
+        }
+        window.location.href="login.jsp";
+        
+	}
+	 function getCookie(key) {
+	        var arr,reg = RegExp('(^| )'+key+'=([^;]+)(;|$)');
+	        if (arr = document.cookie.match(reg))    //["username=liuwei;", "", "liuwei", ";"]
+	            return decodeURIComponent(arr[2]);
+	        else
+	            return null;
+	    }
+</script>
 <div  align="center">
 <div colspan="2">
 <h2>添加新电影</h2>

@@ -77,13 +77,16 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
         options.setInteger(AVOptions.KEY_MEDIACODEC, AVOptions.MEDIA_CODEC_AUTO)
 
         options.setString(AVOptions.KEY_CACHE_DIR, Config.DEFAULT_CACHE_DIR)
+        options.setInteger(AVOptions.KEY_LIVE_STREAMING, 0)
+        options.setString(AVOptions.KEY_CACHE_DIR, Config.DEFAULT_CACHE_DIR)
 
 
+        mVideoView.setAVOptions(options)
         mVideoView.setBufferingIndicator(mLoadingView)
         mVideoView.setCoverView(mCover)
-        mVideoView.setAVOptions(options)
+
         mVideoView.isLooping = false
-        mVideoView.setMediaController(mMediaController)
+
 
         // Set some listeners
         mVideoView.setOnInfoListener(mOnInfoListener)
@@ -94,12 +97,12 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
         mVideoView.setOnVideoFrameListener(mOnVideoFrameListener)
         mVideoView.setOnAudioFrameListener(mOnAudioFrameListener)
 
-        mVideoView.setVideoPath(datasource)
-
+        mVideoView.setVideoPath("http://192.168.43.68/datasource/海王.mp4")
+        mVideoView.setMediaController(mMediaController)
         mMivieTitle.text = intent.getStringExtra(MOVIE_NAME)
-        mVideoView.setOnPreparedListener({
+        /*mVideoView.setOnPreparedListener({
             mVideoView.start()
-        })
+        })*/
         mBackButton.setOnClickListener {
             finish()
         }
