@@ -97,12 +97,12 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
         mVideoView.setOnVideoFrameListener(mOnVideoFrameListener)
         mVideoView.setOnAudioFrameListener(mOnAudioFrameListener)
 
-        mVideoView.setVideoPath("http://192.168.43.68/datasource/海王.mp4")
+        mVideoView.setVideoPath(datasource)
         mVideoView.setMediaController(mMediaController)
         mMivieTitle.text = intent.getStringExtra(MOVIE_NAME)
-        /*mVideoView.setOnPreparedListener({
+        mVideoView.setOnPreparedListener({
             mVideoView.start()
-        })*/
+        })
         mBackButton.setOnClickListener {
             finish()
         }
