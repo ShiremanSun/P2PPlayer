@@ -106,7 +106,6 @@ public class FileUtils {
      * @param path 需要权限的路径
      */
     public static void authorizationAll(Path path) {
-    	System.out.print("设置权限");
         Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_READ);
         perms.add(PosixFilePermission.OWNER_WRITE);

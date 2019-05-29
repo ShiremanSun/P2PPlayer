@@ -9,8 +9,8 @@
 </head>
 <body>
 <%
-	String name = request.getParameter("name").trim();
-	String password = request.getParameter("password").trim();
+	String name = new String(request.getParameter("name").getBytes("iso-8859-1"), "utf-8").trim();
+	String password=new String(request.getParameter("password").getBytes("iso-8859-1"), "utf-8").trim();
 	if(UserDao.getInstance().query(name)) {
 		//用户名存在
 		if(UserDao.getInstance().queryPass(name, password)) {

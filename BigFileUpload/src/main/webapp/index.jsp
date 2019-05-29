@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<title>uoloadmovie</title>
+<title>上传</title>
     <meta charset="utf-8"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -44,7 +44,7 @@
 <ul class="nav nav-tabs">
   <li role="presentation" class="active" style="font-size:20px;"><a href="#">上传</a></li>
   <li role="presentation" style="font-size:20px;"><a href="movielist.jsp">查看</a></li>
-  <li id="fat_menu" class="dropdown navbar-right" style="margin-right:50px;font-size:20px;">
+  <li id="fat_menu" class="dropdown navbar-right" style="font-size:20px;">
   <a id="drop" href="#" class="dropdown-toggle" data-toggle="dropdown"
   role="button" aria-haspopup="true" aria-expanded="false">
   	<font style="vertical-align:inherit;">
@@ -77,31 +77,30 @@
 	}
 	 function getCookie(key) {
 	        var arr,reg = RegExp('(^| )'+key+'=([^;]+)(;|$)');
-	        if (arr = document.cookie.match(reg))    //["username=liuwei;", "", "liuwei", ";"]
+	        if (arr = document.cookie.match(reg)) 
 	            return decodeURIComponent(arr[2]);
 	        else
 	            return null;
 	    }
 </script>
 <div  align="center">
-<div colspan="2">
-<h2>添加新电影</h2>
-</div>
-<div style="display: inline-block;text-align:left">
 
+<h2>添加新电影</h2>
+
+<div style="display: inline-block;text-align:left">
   <div class="input-group input-group-lg" style=margin-top:50px>
   <input id = "name" type="text" class="form-control" placeholder="电影名称" aria-describedby="sizing-addon1">
 </div>
   <div class="input-group input-group-lg" style=margin-top:50px>
-  	<textarea class="form-control" id="details"  style="width:300px;height:100px" placeholder="请输入电影描述"></textarea>
+  	<textarea class="form-control" id="details"  style="width:266px;height:100px" placeholder="请输入电影描述"></textarea>
   </div>
-  <div class=" bottom-20px" >
+  <div class="bottom-20px" >
   	<div >
   		<div id="thelist" class="uploader-list"></div>
   		<div id="picker">选择电影</div>
   	</div>
   	<div style="margin-top:30px">
-  		<div id="imagelist" class="uploader-list"  >
+  		<div id="imagelist" class="uploader-list" >
   		</div>
   		<div id="filePicker">选择图片</div>
   	</div>
@@ -109,7 +108,7 @@
         <button id="ctlBtn" class="btn btn-default">开始上传</button>
     </div>
 </div>
-  </div>
+</div>
 </div>
  
 

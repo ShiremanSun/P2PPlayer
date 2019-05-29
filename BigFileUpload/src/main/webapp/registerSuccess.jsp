@@ -6,14 +6,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>registeresult</title>
+<title>注册成功</title>
 </head>
 <body>
 <%
-String name=request.getParameter("name").trim();//去除首尾空格
-String password=request.getParameter("password").trim();
-String refill=request.getParameter("refill").trim();
-if(name!=null) {
+String name = new String(request.getParameter("name").getBytes("iso-8859-1"), "utf-8").trim();
+String password=new String(request.getParameter("password").getBytes("iso-8859-1"), "utf-8").trim();
+String refill=new String(request.getParameter("refill").getBytes("iso-8859-1"), "utf-8").trim();
+if(name!=null && name.length()>0) {
 	if(UserDao.getInstance().query(name)){
 		out.print("用户已经存在  "+"请<a href=\"register.jsp\">注册</a>");
 	}else {

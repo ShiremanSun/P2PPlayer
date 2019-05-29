@@ -36,7 +36,7 @@
 <ul class="nav nav-tabs">
   <li role="presentation" style="font-size:20px;"><a href="index.jsp" >上传</a></li>
   <li role="presentation"class="active" style="font-size:20px;"><a href="#">查看</a></li>
-  <li id="fat_menu" class="dropdown navbar-right" style="margin-right:50px;font-size:20px;">
+  <li id="fat_menu" class="dropdown navbar-right" style="font-size:20px;">
   <a id="drop" href="#" class="dropdown-toggle" data-toggle="dropdown"
   role="button" aria-haspopup="true" aria-expanded="false">
   	<font style="vertical-align:inherit;">

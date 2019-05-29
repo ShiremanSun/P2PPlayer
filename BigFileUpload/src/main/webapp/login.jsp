@@ -6,29 +6,28 @@
 <head>
 <meta charset="UTF-8">
 <title>login</title>
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="login.css"/>
 </head>
 <body>
 
 <% UserDao.getInstance().createTable(); %>
+<div id="login_frame">
 
-	<h2 align="center"><font color=red>用户登录页面</font></h2>
+   <div align="center" style="font-size:20px;margin-bottom:40px">用户登录</div>
 	<form action="success.jsp" method="post">
-	<table align="center" border="1">
-		<tr>
-			<td>用户名:</td>
-			<td><input type="text" name="name"></td>
-		</tr>
-		<tr>
-			<td>密&nbsp;&nbsp;码:</td>
-			<td><input type="text" name="password"></td>
-		</tr>
-		<tr>
-			<td><input type="submit" value="登录" name="login"></td>
-			<td><input type="reset" value="重置" name="reset"></td>
-		</tr>
-	</table>
-	<p align="center"><a href="register.jsp" color=blue>注册用户</a></p>
+	<p class="input-field"><label class="label_input">用户名</label><input type="text" id="username" class="text_field" name="name"/></p>
+    <p class="input-field"><label class="label_input">密码</label><input type="text" id="password" class="text_field" name="password"/></p>
+        <div id="login_control">
+            <input type="submit" id="btn_login" value="登录" />
+            <a class="forget_pwd" href="register.jsp">注册新用户</a>
+        </div>
+
 	</form>
+</div>
+
 
 </body>
 </html>
