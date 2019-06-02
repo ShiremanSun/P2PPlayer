@@ -16,7 +16,7 @@ import java.util.*
 /**
  *Created by sunday on 19-4-24.
  */
-class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInfo) : BittorrentDownload {
+class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInfo) : BitTorrentDownload {
 
 
     private var state : TransferState
@@ -33,20 +33,20 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
         return ""
     }
 
-    override fun getSavePath(): File {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getSavePath(): File? {
+        return null
     }
 
-    override fun previewFile(): File {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun previewFile(): File? {
+        return null
     }
 
     override fun getSize(): Long {
         return -1
     }
 
-    override fun getCreated(): Date? {
-        return null
+    override fun getCreated(): Date {
+        return Date()
     }
 
     override fun getState(): TransferState {
@@ -54,19 +54,19 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     }
 
     override fun getBytesReceived(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0L
     }
 
     override fun getBytesSent(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return 0L
     }
 
     override fun getDownloadSpeed(): Long {
-        return 0
+        return 0L
     }
 
     override fun magnetUri(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return ""
     }
 
     override fun getUploadSpeed(): Long {
@@ -78,7 +78,7 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     }
 
     override fun isDownloading(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return false
     }
 
     override fun getTotalPeers(): Int {
@@ -102,49 +102,44 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     }
 
     override fun isComplete(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return false
     }
 
-    override fun getItems(): MutableList<TransferItem> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getItems(): MutableList<TransferItem>? {
+        return null
     }
 
-    override fun remove(deleteData: Boolean) {
-        state = TransferState.CANCELED
-        TransferManager.remove(this)
 
-    }
 
-    override fun getContentSavePath(): File {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getContentSavePath(): File? {
+        return null
     }
 
     override fun isPaused(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return true
     }
 
     override fun isSeeding(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return false
     }
 
     override fun isFinished(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return false
     }
 
     override fun pause() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun resume() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun remove(deleteTorrent: Boolean, deleteData: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        state = TransferState.CANCELED
+        TransferManager.remove(this)
     }
 
     override fun getPredominantFileExtension(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return ""
     }
 
 
@@ -166,7 +161,7 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
             if (data != null) {
                 try {
                     //先把当前的下载种子任务移除
-                    remove(false)
+                    remove(deleteTorrent = false,deleteData = false)
                     val ti = TorrentInfo.bdecode(data)
                     //开始下载文件
                     BTEngine.downloadFile(ti, null)
@@ -185,7 +180,7 @@ class TorrentFetcherDownload(private val torrentDownloadInfo: TorrentDownloadInf
     init {
         this.state = TransferState.DOWNLOADING_TORRENT
         TransferManager.bitTorrentDownloads.add(this)
-        TransferManager.bitTorrentDownloadMap[infoHash] = this
+        TransferManager.bitTorrentDownloadMap[getInfoHash()] = this
         startDownload()
     }
 }

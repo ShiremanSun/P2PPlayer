@@ -22,7 +22,7 @@ import java.util.*
 /**
  *Created by sunday on 19-4-27.
  */
-private val BYTE_UNITS = arrayOf("b", "KB", "Mb", "Gb", "Tb")
+private val BYTE_UNITS = arrayOf("B", "KB", "MB", "GB", "TB")
 
 const val  MOVIE_URL = "movie_url"
 const val MOVIE_NAME = "movie_name"
@@ -32,6 +32,7 @@ const val TIME_PREFERENCE = "time_preference"
 
 const val SERVER_IP = "server_ip"
 
+const val REQUEST_CODE_FILEPICKER = 1
 
 fun getBytesInHuman(size: Long): String {
     var i = 0

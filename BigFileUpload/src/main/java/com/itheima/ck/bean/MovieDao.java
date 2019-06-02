@@ -101,7 +101,6 @@ public class MovieDao {
 			list.add(movieBean);
 			
 		}
-		
 		statement.close();
 		return list;
 	}

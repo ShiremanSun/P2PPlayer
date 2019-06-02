@@ -6,7 +6,7 @@ import java.io.File
  * Created by sunday on 19-4-25.
  */
 interface BTDownloadListener {
-    abstract fun finished(dl: BTDownload)
+    fun finished(dl: BTDownload)
 
-    abstract fun removed(dl: BTDownload, incompleteFiles: Set<File>)
+    fun removed(dl: BTDownload, incompleteFiles: Set<File>)
 }

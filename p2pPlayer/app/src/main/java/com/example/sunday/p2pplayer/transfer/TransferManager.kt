@@ -13,17 +13,17 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 object TransferManager{
 
-    val bitTorrentDownloads = CopyOnWriteArrayList<BittorrentDownload>()
-     val bitTorrentDownloadMap = ConcurrentHashMap<String, BittorrentDownload>(0)
+     val bitTorrentDownloads = CopyOnWriteArrayList<BitTorrentDownload>()
+     val bitTorrentDownloadMap = ConcurrentHashMap<String, BitTorrentDownload>(0)
 
 
     init {
         loadTorrentTask()
     }
 
-    fun downloadTorrent(uri: Uri , displayName : String) : BittorrentDownload? {
+    fun downloadTorrent(uri: Uri , displayName : String) : BitTorrentDownload? {
 
-        var download: BittorrentDownload? = null
+        var download: BitTorrentDownload? = null
         if ("file" == uri.scheme) {
             val data = FileUtils.readFileToByteArray(File(uri.path))
             val ti = TorrentInfo.bdecode(data)
@@ -37,8 +37,8 @@ object TransferManager{
     }
 
 
-    fun remove(transfer : Transfer) : Boolean{
-        bitTorrentDownloadMap.remove((transfer as BittorrentDownload).infoHash)
+    fun remove(transfer : BitTorrentDownload) : Boolean{
+        bitTorrentDownloadMap.remove(transfer.getInfoHash())
         return bitTorrentDownloads.remove(transfer)
     }
 
@@ -49,10 +49,10 @@ object TransferManager{
             override fun downloadAdded(engine: BTEngine, dl: BTDownload) {
                 val uiBitTorrentDownload = UIBitTorrentDownload(dl)
                 bitTorrentDownloads.add(uiBitTorrentDownload)
-                bitTorrentDownloadMap.put(dl.infoHash, uiBitTorrentDownload)
+                bitTorrentDownloadMap[dl.getInfoHash()] = uiBitTorrentDownload
             }
             override fun downloadUpdate(engine: BTEngine, dl: BTDownload) {
-                val download = bitTorrentDownloadMap[dl.infoHash]
+                val download = bitTorrentDownloadMap[dl.getInfoHash()]
                 if (download is UIBitTorrentDownload) {
                     download.updateUI(dl)
                 }
@@ -62,7 +62,7 @@ object TransferManager{
         BTEngine.restoreDownloads()
     }
 
-    fun getBitDownload(infoHash : String) : BittorrentDownload{
+    fun getBitDownload(infoHash : String) : BitTorrentDownload{
         return bitTorrentDownloadMap[infoHash]!!
     }
 }

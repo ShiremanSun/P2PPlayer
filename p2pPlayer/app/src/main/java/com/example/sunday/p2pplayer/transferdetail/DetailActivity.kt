@@ -17,12 +17,11 @@ import android.widget.TextView
 import com.example.sunday.p2pplayer.R
 import com.example.sunday.p2pplayer.Util.INFOHASH
 import com.example.sunday.p2pplayer.Util.getBytesInHuman
-import com.example.sunday.p2pplayer.bittorrent.BittorrentDownload
+import com.example.sunday.p2pplayer.bittorrent.BitTorrentDownload
 import com.example.sunday.p2pplayer.bittorrent.UIBitTorrentDownload
 import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.example.sunday.p2pplayer.transfer.TransferState
 import com.frostwire.jlibtorrent.PeerInfo
-import com.frostwire.jlibtorrent.TcpEndpoint
 import com.gyf.immersionbar.ImmersionBar
 import java.lang.ref.WeakReference
 
@@ -35,7 +34,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var peersInfo : MutableList<PeerInfo>
 
     val mHandler = Handler(Looper.getMainLooper())
-    private lateinit var mBTDownload : BittorrentDownload
+    private lateinit var mBTDownload : BitTorrentDownload
 
     private lateinit var mStatus : TextView
     private lateinit var mState : String
@@ -70,7 +69,7 @@ class DetailActivity : AppCompatActivity() {
         //拿到点击的下载任务
         mBTDownload = TransferManager.getBitDownload(infoHash)
 
-        mState = when (mBTDownload.state) {
+        mState = when (mBTDownload.getState()) {
             TransferState.FINISHING -> "即将完成"
             TransferState.CHECKING -> "正在检查"
             TransferState.DOWNLOADING -> "正在下载"
@@ -164,7 +163,7 @@ class DetailActivity : AppCompatActivity() {
             }
             activity?.adapter?.updatePeers(peersList)
             activity?.mPeersText?.text = String.format("共%d个节点", peersList.size)
-            activity?.mState = when (download?.state) {
+            activity?.mState = when (download?.getState()) {
                 TransferState.FINISHING -> "即将完成"
                 TransferState.CHECKING -> "正在检查"
                 TransferState.DOWNLOADING -> "正在下载"

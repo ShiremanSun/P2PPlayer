@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -12,31 +11,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.alibaba.android.arouter.facade.annotation.Route;
-import com.example.sunday.p2pplayer.Util.PermissionUtil;
 import com.example.sunday.p2pplayer.Util.UtilKt;
 import com.example.sunday.p2pplayer.bittorrent.DownLoadManager;
 import com.example.sunday.p2pplayer.downloaded.FragmentDownloaded;
 import com.example.sunday.p2pplayer.downloading.FragmentDownloading;
-import com.example.sunday.p2pplayer.model.MovieBean;
 import com.example.sunday.p2pplayer.search.FragmentSearch;
-import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
-import com.vincent.filepicker.Constant;
-import com.vincent.filepicker.filter.entity.NormalFile;
+import com.leon.lfilepickerlibrary.utils.Constant;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, ViewPager.OnPageChangeListener{
@@ -164,12 +151,12 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
-            case Constant.REQUEST_CODE_PICK_FILE:
+            case UtilKt.REQUEST_CODE_FILEPICKER:
                 if (resultCode == RESULT_OK) {
                     if (data != null) {
-                        ArrayList<NormalFile> files = data.getParcelableArrayListExtra(Constant.RESULT_PICK_FILE);
-                        for (NormalFile file : files) {
-                            Uri uri = Uri.parse(String.format("file://%s", file.getPath()));
+                        ArrayList<String> files = data.getStringArrayListExtra(Constant.RESULT_INFO);
+                        for (String file : files) {
+                            Uri uri = Uri.parse(String.format("file://%s", file));
                             if (uri != null) {
                                 DownLoadManager.INSTANCE.downloadTorrent(uri, "");
                             }
@@ -177,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     }
                 }
                 break;
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

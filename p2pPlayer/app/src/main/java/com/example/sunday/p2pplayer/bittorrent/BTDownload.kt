@@ -19,7 +19,7 @@ import kotlin.collections.HashMap
 /**
  *Created by sunday on 19-4-25.
  */
-class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : BittorrentDownload {
+class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : BitTorrentDownload {
 
 
     private val SAVE_RESUME_RESOLUTION_MILLIS: Long = 10000
@@ -116,23 +116,24 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
             return TransferState.PAUSED
         }
 
-        if (!isPaused && status.isFinished) { // see the docs of isFinished
+        if (!isPaused && status.isFinished) {
             return TransferState.SEEDING
         }
 
         val state = status.state()
 
-        when (state) {
-            TorrentStatus.State.CHECKING_FILES -> return TransferState.CHECKING
-            TorrentStatus.State.DOWNLOADING_METADATA -> return TransferState.DOWNLOADING_METADATA
-            TorrentStatus.State.DOWNLOADING -> return TransferState.DOWNLOADING
-            TorrentStatus.State.FINISHED -> return TransferState.FINISHED
-            TorrentStatus.State.SEEDING -> return TransferState.SEEDING
-            TorrentStatus.State.ALLOCATING -> return TransferState.ALLOCATING
-            TorrentStatus.State.CHECKING_RESUME_DATA -> return TransferState.CHECKING
-            TorrentStatus.State.UNKNOWN -> return TransferState.UNKNOWN
-            else -> return TransferState.UNKNOWN
-        }    }
+        return when (state) {
+            TorrentStatus.State.CHECKING_FILES -> TransferState.CHECKING
+            TorrentStatus.State.DOWNLOADING_METADATA -> TransferState.DOWNLOADING_METADATA
+            TorrentStatus.State.DOWNLOADING -> TransferState.DOWNLOADING
+            TorrentStatus.State.FINISHED -> TransferState.FINISHED
+            TorrentStatus.State.SEEDING -> TransferState.SEEDING
+            TorrentStatus.State.ALLOCATING -> TransferState.ALLOCATING
+            TorrentStatus.State.CHECKING_RESUME_DATA -> TransferState.CHECKING
+            TorrentStatus.State.UNKNOWN -> TransferState.UNKNOWN
+            else -> TransferState.UNKNOWN
+        }
+    }
 
     override fun getBytesReceived(): Long {
         return if (th.isValid) th.status().totalDone() else 0
@@ -143,7 +144,7 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
     }
 
     override fun getDownloadSpeed(): Long {
-        return if (!th.isValid || isFinished || isPaused || isSeeding) 0 else th.status().downloadPayloadRate().toLong()
+        return if (!th.isValid || isFinished() || isPaused() || isSeeding()) 0 else th.status().downloadPayloadRate().toLong()
     }
 
     override fun magnetUri(): String {
@@ -151,7 +152,7 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
     }
 
     override fun getUploadSpeed(): Long {
-        return if (!th.isValid || isFinished && !isSeeding || isPaused) 0 else th.status().uploadPayloadRate().toLong()
+        return if (!th.isValid || isFinished() && !isSeeding() || isPaused()) 0 else th.status().uploadPayloadRate().toLong()
     }
 
     override fun getConnectedPeers(): Int {
@@ -159,7 +160,7 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
     }
 
     override fun isDownloading(): Boolean {
-        return downloadSpeed > 0
+        return getDownloadSpeed() > 0
     }
 
     override fun getTotalPeers(): Int {
@@ -215,7 +216,7 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
     }
 
     override fun isComplete(): Boolean {
-        return progress == 100
+        return getProgress() == 100
     }
 
     override fun getItems(): ArrayList<TransferItem> {
@@ -240,8 +241,7 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
         return items
     }
 
-    override fun remove(deleteData: Boolean) {
-        remove(true, deleteData)    }
+
 
     @SuppressLint("LongLogTag")
     override fun getContentSavePath(): File? {
@@ -290,7 +290,7 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
             return
         }
 
-        extra.put(WAS_PAUSED_EXTRA_KEY, java.lang.Boolean.FALSE.toString())
+        extra[WAS_PAUSED_EXTRA_KEY] = java.lang.Boolean.FALSE.toString()
 
         th.setFlags(TorrentFlags.AUTO_MANAGED)
         th.resume()
@@ -309,7 +309,7 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
     }
 
     override fun remove(deleteTorrent: Boolean, deleteData: Boolean) {
-        val infoHash = this.infoHash
+        val infoHash = this.getInfoHash()
 
         incompleteFilesToRemove = getIncompleteFiles()
 
@@ -448,7 +448,7 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
         try {
             if (th.isValid) {
                 // trigger items calculation
-                items
+                getItems()
             }
         } catch (e: Throwable) {
             Log.w("Error handling torrent checked logic", e.message)
@@ -527,7 +527,7 @@ class BTDownload(private val engine: BTEngine, val th: TorrentHandle) : Bittorre
     private fun createExtra(): HashMap<String, String> {
         val map = HashMap<String, String>()
         try {
-            val infoHash = infoHash
+            val infoHash = getInfoHash()
             val file = engine.resumeDataFile(infoHash)
             if (file.exists()) {
                 val arr = FileUtils.readFileToByteArray(file)

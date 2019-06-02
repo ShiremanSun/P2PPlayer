@@ -15,11 +15,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.bumptech.glide.Glide
 import com.example.sunday.p2pplayer.R
 import com.example.sunday.p2pplayer.Util.INFOHASH
 import com.example.sunday.p2pplayer.Util.getBytesInHuman
-import com.example.sunday.p2pplayer.bittorrent.BittorrentDownload
+import com.example.sunday.p2pplayer.bittorrent.BitTorrentDownload
 import com.example.sunday.p2pplayer.transfer.Transfer
 import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.example.sunday.p2pplayer.transfer.TransferState
@@ -40,7 +39,7 @@ class FragmentDownloading : Fragment(){
 
     lateinit var viewModel : DownloadingViewModel
 
-    private val list = ArrayList<BittorrentDownload>()
+    private val list = ArrayList<BitTorrentDownload>()
 
     var bitDownloadListener : CompleteListener? = null
     private val mHandler = Handler(Looper.getMainLooper())
@@ -74,7 +73,7 @@ class FragmentDownloading : Fragment(){
         return view
     }
 
-    private fun filter(list : List<BittorrentDownload>) : List<BittorrentDownload> {
+    private fun filter(list : List<BitTorrentDownload>) : List<BitTorrentDownload> {
         //返回正在下载的
         return list.filter { isDownloading(it) }
     }
@@ -87,32 +86,32 @@ class FragmentDownloading : Fragment(){
 
         override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
             p0.updateUI(p1)
-            p0.itemView.setOnClickListener({
+            p0.itemView.setOnClickListener {
                 val download = list[p1]
-                when(download.state) {
+                when(download.getState()) {
                     TransferState.DOWNLOADING -> download.pause()
                     TransferState.PAUSED -> download.resume()
                     else -> download.pause()
                 }
-            })
+            }
             p0.itemView.setOnLongClickListener {
                 val dialog = AlertDialog.Builder(context)
                 dialog.setMessage("是否要删除任务以及下载文件")
-                dialog.setPositiveButton("确定", {_, _ ->
-                    list[p1].remove(true)
+                dialog.setPositiveButton("确定") { _, _ ->
+                    list[p1].remove(deleteData = true)
                     list.removeAt(p1)
                     notifyDataSetChanged()
-                })
-                dialog.setNegativeButton("取消", {_dialog, _ ->
+                }
+                dialog.setNegativeButton("取消") { _dialog, _ ->
                     _dialog.cancel()
-                })
+                }
                 dialog.show()
                 return@setOnLongClickListener true
             }
 
             p0.detail.setOnClickListener {
                 val intent = Intent(activity, DetailActivity::class.java)
-                intent.putExtra(INFOHASH, list[p1].infoHash)
+                intent.putExtra(INFOHASH, list[p1].getInfoHash())
                 activity?.startActivity(intent)
             }
         }
@@ -133,11 +132,11 @@ class FragmentDownloading : Fragment(){
             val detail = v.findViewById<ImageButton>(R.id.torrent_details_button)!!
             fun updateUI(position : Int) {
                 val download = list[position]
-                title.text = download.name
+                title.text = download.getDisplayName()
                 peers.text = String.format("节点 %s", formatPeers(download))
                 seeds.text = String.format("播种 %s", formatSeeds(download))
-                setProgress(progessBar,download.progress)
-                val downloadStatus = when(download.state) {
+                setProgress(progessBar,download.getProgress())
+                val downloadStatus = when(download.getState()) {
                     TransferState.FINISHING -> "即将完成"
                     TransferState.CHECKING -> "正在检查"
                     TransferState.DOWNLOADING -> "正在下载"
@@ -152,23 +151,23 @@ class FragmentDownloading : Fragment(){
                     else -> ""
                 }
                 status.text = downloadStatus
-                downSpeed.text = String.format("%s/s", getBytesInHuman(download.downloadSpeed))
-                uploadSpeed.text = String.format("%s/s", getBytesInHuman(download.uploadSpeed))
-                size.text = getBytesInHuman(download.size)
+                downSpeed.text = String.format("%s/s", getBytesInHuman(download.getDownloadSpeed()))
+                uploadSpeed.text = String.format("%s/s", getBytesInHuman(download.getUploadSpeed()))
+                size.text = getBytesInHuman(download.getSize())
             }
         }
 
-        private fun formatPeers(dl: BittorrentDownload): String {
-            val connectedPeers = dl.connectedPeers
-            val peers = dl.totalPeers
+        private fun formatPeers(dl: BitTorrentDownload): String {
+            val connectedPeers = dl.getConnectedPeers()
+            val peers = dl.getTotalPeers()
             var tmp = if (connectedPeers > peers) "%1" else "%1 " + "/" + " %2"
             tmp = tmp.replace("%1", connectedPeers.toString())
             tmp = tmp.replace("%2", peers.toString())
             return tmp
         }
-        private fun formatSeeds(dl: BittorrentDownload): String {
-            val connectedSeeds = dl.connectedSeeds
-            val seeds = dl.totalSeeds
+        private fun formatSeeds(dl: BitTorrentDownload): String {
+            val connectedSeeds = dl.getConnectedSeeds()
+            val seeds = dl.getTotalSeeds()
             var tmp = if (connectedSeeds > seeds) "%1" else "%1 " + "/" + " %2"
             tmp = tmp.replace("%1", connectedSeeds.toString())
             tmp = tmp.replace("%2", seeds.toString())
@@ -182,8 +181,8 @@ class FragmentDownloading : Fragment(){
         }
     }
 
-    private fun isDownloading(transfer: BittorrentDownload): Boolean {
-        val state = transfer.state
+    private fun isDownloading(transfer: BitTorrentDownload): Boolean {
+        val state = transfer.getState()
         return state === TransferState.CHECKING ||
                 state === TransferState.DOWNLOADING ||
                 state === TransferState.DEMUXING ||
@@ -212,18 +211,19 @@ class FragmentDownloading : Fragment(){
                     .forEach { weakReference.get()?.bitDownloadListener?.complete(it) }
             weakReference.get()?.mHandler?.postDelayed(this, 2000)
         }
-         private inline fun isCompleted(transfer: Transfer): Boolean {
-             val state = transfer.state
+
+         private fun isCompleted(transfer: BitTorrentDownload): Boolean {
+             val state = transfer.getState()
              return state === TransferState.FINISHED || state === TransferState.COMPLETE || state === TransferState.SEEDING
          }
 
     }
-    class TransferComparator : Comparator<Transfer> {
-        override fun compare(o1: Transfer?, o2: Transfer?): Int {
+    class TransferComparator : Comparator<BitTorrentDownload> {
+        override fun compare(o1: BitTorrentDownload?, o2: BitTorrentDownload?): Int {
             try {
-                return o1!!.created.compareTo(o2!!.created)
+                return o1?.getCreated()?.compareTo(o2?.getCreated())!!
             }catch (e : Exception) {
-
+                e.printStackTrace()
             }
             return 0
         }
@@ -233,7 +233,7 @@ class FragmentDownloading : Fragment(){
 
 
     interface CompleteListener{
-        fun complete(bittorrentDownload: BittorrentDownload)
+        fun complete(bitTorrentDownload: BitTorrentDownload)
     }
 
 }

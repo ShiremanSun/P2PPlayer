@@ -1,5 +1,6 @@
 package com.example.sunday.p2pplayer.search
 
+
 import android.Manifest
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -28,17 +29,13 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.sunday.p2pplayer.MainActivity
 import com.example.sunday.p2pplayer.R
-import com.example.sunday.p2pplayer.Util.MOVIE_NAME
-import com.example.sunday.p2pplayer.Util.MOVIE_URL
-import com.example.sunday.p2pplayer.Util.PermissionUtil
-import com.example.sunday.p2pplayer.Util.addDownloadAnimation
+import com.example.sunday.p2pplayer.Util.*
 import com.example.sunday.p2pplayer.bittorrent.DownLoadManager
 import com.example.sunday.p2pplayer.model.MovieBean
 import com.example.sunday.p2pplayer.movieplay.VideoActivity
 import com.example.sunday.p2pplayer.transfer.TransferManager
 import com.gyf.immersionbar.ImmersionBar
-import com.vincent.filepicker.Constant
-import com.vincent.filepicker.activity.NormalFilePickActivity
+import com.leon.lfilepickerlibrary.LFilePicker
 import kotlinx.android.synthetic.main.fragment_search.*
 import java.util.*
 import java.util.regex.Pattern
@@ -106,10 +103,12 @@ class FragmentSearch : Fragment() {
         super.onActivityCreated(savedInstanceState)
         open.setOnClickListener {
             //打开文件选择器
-            val intent = Intent(activity, NormalFilePickActivity::class.java)
-            intent.putExtra(Constant.MAX_NUMBER, 1)
-            intent.putExtra(NormalFilePickActivity.SUFFIX, arrayOf("torrent"))
-            activity?.startActivityForResult(intent, Constant.REQUEST_CODE_PICK_FILE)
+            LFilePicker().withActivity(activity)
+                    .withRequestCode(REQUEST_CODE_FILEPICKER)
+                    .withTitle("选择文件")
+                    .withFileFilter(arrayOf(".torrent"))
+                    .withMutilyMode(false)
+                    .start()
         }
     }
    inner class SearchAdapter : RecyclerView.Adapter<SearchAdapter.ViewHolder>(){
@@ -158,7 +157,7 @@ class FragmentSearch : Fragment() {
                                 TransferManager.bitTorrentDownloads.forEach {
                                     val dataSourcePath = mList[p0.adapterPosition].dataSourcePath;
                                     val displayName = dataSourcePath.substring(dataSourcePath.lastIndexOf('/') + 1)
-                                    if (TextUtils.equals(displayName, it.name)) {
+                                    if (TextUtils.equals(displayName, it.getName())) {
                                         Toast.makeText(activity,"任务已存在",Toast.LENGTH_SHORT).show()
                                         return
                                     }
@@ -202,7 +201,7 @@ class FragmentSearch : Fragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         PermissionUtil.onResultPermission(requestCode, permissions, grantResults)
     }
 

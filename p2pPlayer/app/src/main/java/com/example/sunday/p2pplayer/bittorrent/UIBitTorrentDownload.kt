@@ -11,14 +11,14 @@ import java.util.*
 /**
 * Created by sunday on 19-4-25.
 */
-class UIBitTorrentDownload(public val dl: BTDownload) : BittorrentDownload {
+class UIBitTorrentDownload(val dl: BTDownload) : BitTorrentDownload {
     private var displayName : String
     private var size : Long
     private var list : List<TransferItem>
 
     init {
         dl.setListener(StatusListener())
-        this.displayName = dl.displayName
+        this.displayName = dl.getDisplayName()
         size = calculateSize(dl)
         this.list = calculateItems(dl)
         if (!dl.wasPause()) {
@@ -26,7 +26,7 @@ class UIBitTorrentDownload(public val dl: BTDownload) : BittorrentDownload {
         }
     }
     fun updateUI(dl: BTDownload) {
-        displayName = dl.displayName
+        displayName = dl.getDisplayName()
         size = calculateSize(dl)
         list = calculateItems(dl)
 
@@ -35,47 +35,47 @@ class UIBitTorrentDownload(public val dl: BTDownload) : BittorrentDownload {
         private const val TAG = "UIBitTorrent"
     }
     override fun getName(): String {
-        return dl.name
+        return dl.getName()
     }
 
     override fun getDisplayName(): String {
-        return dl.displayName
+        return dl.getDisplayName()
     }
 
     override fun getInfoHash(): String {
-        return dl.infoHash
+        return dl.getInfoHash()
     }
 
     override fun getSavePath(): File {
-        return dl.savePath
+        return dl.getSavePath()
     }
 
-    override fun previewFile(): File? {
-        return dl.previewFile()
+    override fun previewFile(): File {
+        return dl.previewFile()!!
     }
 
     override fun getSize(): Long {
-        return dl.size
+        return dl.getSize()
     }
 
     override fun getCreated(): Date {
-        return dl.created
+        return dl.getCreated()
     }
 
     override fun getState(): TransferState {
-        return dl.state
+        return dl.getState()
     }
 
     override fun getBytesReceived(): Long {
-        return dl.bytesReceived
+        return dl.getBytesReceived()
     }
 
     override fun getBytesSent(): Long {
-        return dl.bytesSent
+        return dl.getBytesSent()
     }
 
     override fun getDownloadSpeed(): Long {
-        return dl.downloadSpeed
+        return dl.getDownloadSpeed()
     }
 
     override fun magnetUri(): String {
@@ -83,64 +83,61 @@ class UIBitTorrentDownload(public val dl: BTDownload) : BittorrentDownload {
     }
 
     override fun getUploadSpeed(): Long {
-        return dl.uploadSpeed
+        return dl.getUploadSpeed()
     }
 
     override fun getConnectedPeers(): Int {
-        return dl.connectedPeers
+        return dl.getConnectedPeers()
     }
 
     override fun isDownloading(): Boolean {
-        return dl.isDownloading
+        return dl.isDownloading()
     }
 
     override fun getTotalPeers(): Int {
-        return dl.totalPeers
+        return dl.getTotalPeers()
     }
 
     override fun getConnectedSeeds(): Int {
-        return dl.connectedSeeds
+        return dl.getConnectedSeeds()
     }
 
     override fun getTotalSeeds(): Int {
-        return dl.totalSeeds
+        return dl.getTotalSeeds()
     }
 
     override fun getETA(): Long {
-        return dl.eta
+        return dl.getETA()
     }
 
     override fun getProgress(): Int {
-        return dl.progress
+        return dl.getProgress()
     }
 
     override fun isComplete(): Boolean {
-        return dl.isComplete
+        return dl.isComplete()
     }
 
     override fun getItems(): MutableList<TransferItem> {
-        return dl.items
+        return dl.getItems()
     }
 
-    override fun remove(deleteData: Boolean) {
-        dl.remove(deleteData)
-        TransferManager.remove(this)
-    }
+
 
     override fun getContentSavePath(): File? {
-        return dl.contentSavePath
+        return dl.getContentSavePath()
     }
 
     override fun isPaused(): Boolean {
-        return dl.isPaused
+        return dl.isPaused()
     }
 
     override fun isSeeding(): Boolean {
-        return dl.isSeeding
+        return dl.isSeeding()
     }
 
     override fun isFinished(): Boolean {
-        return dl.isFinished
+        return dl.isFinished()
     }
 
     override fun pause() {
@@ -152,20 +149,21 @@ class UIBitTorrentDownload(public val dl: BTDownload) : BittorrentDownload {
     }
 
     override fun remove(deleteTorrent: Boolean, deleteData: Boolean) {
-        remove(deleteData)
+        dl.remove(deleteData = deleteData)
+        TransferManager.remove(this)
     }
 
     override fun getPredominantFileExtension(): String? {
-        return dl.predominantFileExtension
+        return dl.getPredominantFileExtension()
     }
 
 
 
     private fun calculateSize(dl: BTDownload) : Long{
-        var size = dl.size
+        var size = dl.getSize()
         val partial = dl.isPartial()
         if (partial) {
-            val lists = dl.items
+            val lists = dl.getItems()
             val totalSize: Long = lists
                     .filterNot { it.isSkipped() }
                     .map { it.getSize() }
@@ -178,7 +176,7 @@ class UIBitTorrentDownload(public val dl: BTDownload) : BittorrentDownload {
     }
 
     private fun calculateItems(dl: BTDownload) : List<TransferItem>{
-        return dl.items.filterNot { it.isSkipped() }
+        return dl.getItems().filterNot { it.isSkipped() }
     }
 
     private inner class StatusListener : BTDownloadListener{
@@ -197,7 +195,7 @@ class UIBitTorrentDownload(public val dl: BTDownload) : BittorrentDownload {
                     Log.i(TAG, "无法删除")
                 }
             }
-            deleteInCompleteFile(dl.savePath)
+            deleteInCompleteFile(dl.getSavePath())
         }
 
         private fun deleteInCompleteFile(dictionary : File) : Boolean {
