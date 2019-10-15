@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.example.sunday.p2pplayer.Util.UtilKt;
 import com.example.sunday.p2pplayer.bittorrent.DownLoadManager;
@@ -21,6 +22,8 @@ import com.example.sunday.p2pplayer.downloading.FragmentDownloading;
 import com.example.sunday.p2pplayer.search.FragmentSearch;
 import com.gyf.immersionbar.ImmersionBar;
 import com.leon.lfilepickerlibrary.utils.Constant;
+import com.sunday.networklistener.NetType;
+import com.sunday.networklistener.annotate.NetWork;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +86,15 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
 
 
+
+    @NetWork
+    public void netWorkChanged(NetType netType) {
+        if (netType == NetType.GPRS) {
+            Toast.makeText(this, "4G",Toast.LENGTH_SHORT).show();
+        } else if (netType == NetType.WIFI) {
+            Toast.makeText(this, "WIFI",Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {

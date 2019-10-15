@@ -1,1 +1,1 @@
-include ':app', ':simpletorrentandroid', ':vitamio'
+include ':app', ':simpletorrentandroid', ':vitamio', ':networklistener'

@@ -9,26 +9,16 @@ import java.io.File
 /**
 * Created by sunday on 19-4-25.
 */
-class BTDownloadItem : TransferItem{
+class BTDownloadItem(private val th: TorrentHandle, private val index: Int, filePath: String, fileSize: Long, piecesTracker: PiecesTracker) : TransferItem{
 
-    private val th: TorrentHandle
-    private val index: Int
-
-    private val file: File
+    private val file: File = File(th.savePath(), filePath)
     private val name: String
-    private val size: Long
+    private val size: Long = fileSize
 
-    private val piecesTracker: PiecesTracker?
+    private val piecesTracker: PiecesTracker? = piecesTracker
 
-    constructor(th: TorrentHandle, index: Int, filePath: String, fileSize: Long, piecesTracker: PiecesTracker){
-        this.th = th
-        this.index = index
-
-        this.file = File(th.savePath(), filePath)
+    init {
         this.name = file.name
-        this.size = fileSize
-
-        this.piecesTracker = piecesTracker
     }
     override fun getName(): String {
         return name    }

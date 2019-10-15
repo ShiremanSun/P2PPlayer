@@ -16,6 +16,8 @@ import com.example.sunday.p2pplayer.Util.*
 import com.gyf.immersionbar.ImmersionBar
 import com.pili.pldroid.player.*
 import com.pili.pldroid.player.widget.PLVideoView
+import com.sunday.networklistener.NetType
+import com.sunday.networklistener.annotate.NetWork
 import java.util.*
 import kotlin.experimental.and
 
@@ -100,16 +102,24 @@ class VideoActivity : AppCompatActivity(), PLOnCompletionListener,
         mVideoView.setVideoPath(datasource)
         mVideoView.setMediaController(mMediaController)
         mMivieTitle.text = intent.getStringExtra(MOVIE_NAME)
-        mVideoView.setOnPreparedListener({
+        mVideoView.setOnPreparedListener{
             mVideoView.start()
-        })
+        }
         mBackButton.setOnClickListener {
             finish()
         }
 
     }
 
+    @NetWork
+    fun networkChanged(netType: NetType) {
+        when(netType) {
+            NetType.WIFI -> Log.d("VideoActivity", "现在是WIFI")
+            NetType.GPRS -> Log.d("VideoActivity", "现在是流量")
+            else -> Log.d("VideoActivity", "现在无网络")
 
+        }
+    }
 
     override fun onDestroy() {
         val sharedPreference = getSharedPreferences(TIME_PREFERENCE, Context.MODE_PRIVATE).edit()
